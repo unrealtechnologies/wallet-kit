@@ -32,33 +32,9 @@
 // into groups of 11 bits, and each group is mapped to a corresponding word from the BIP39 wordlist to form the mnemonic
 // phrase.
 
-inline static std::string derive_checksum_bits(std::string entropyBinary) {
-    if (entropyBinary.length() != 256 && entropyBinary.length() != 128) {
-        throw std::invalid_argument("derive_checksum_bits entropy length must be 128 or 256");
-    }
-
-    // Compute the SHA256 hash of the entropy binary string
-    SHA256 sha;
-    sha.update(entropyBinary);
-    uint8_t * digest = sha.digest();
-
-    auto sha256_hex_str = SHA256::toString(digest);
-    auto sha256_binary_str = hex_string_to_binary(sha256_hex_str);
-
-    std::cout << "sha256_str: " << sha256_hex_str << std::endl;
-    std::cout << "sha256_binary_str: " << sha256_binary_str << std::endl;
-
-    // Calculate the number of checksum bits required
-    size_t checksum_bits_length = entropyBinary.length() / 32;
-
-    // Extract the first `checksum_bits_length` bits of the SHA256 hash as the checksum bits
-    std::string checksum_bits = sha256_binary_str.substr(0, checksum_bits_length);
-    return checksum_bits;
-}
-
-inline static std::string derive_checksum_bits(const uint8_t* entropyBytes, size_t entropyLength) {
+inline static std::string deriveChecksumBits(const uint8_t* entropyBytes, size_t entropyLength) {
     if (entropyLength != 16 && entropyLength != 32) {
-        throw std::invalid_argument("derive_checksum_bits entropy length must be 16 or 32");
+        throw std::invalid_argument("deriveChecksumBits entropy length must be 16 or 32");
     }
 
     // Compute the SHA256 hash of the entropy bytes
@@ -78,15 +54,5 @@ inline static std::string derive_checksum_bits(const uint8_t* entropyBytes, size
 
     return checksum_bits;
 }
-
-
-inline std::string derive_checksum_bits(char* entropyBinary) {
-    auto checksumBitsLength = strlen(entropyBinary) / 32;
-    SHA256 sha;
-    sha.update(entropyBinary);
-    uint8_t * digest = sha.digest();
-    return SHA256::toString(digest).substr(0,checksumBitsLength);
-}
-
 
 #endif //WALLET_KIT_DERIVE_CHECKSUM_BITS_H

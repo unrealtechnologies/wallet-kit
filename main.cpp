@@ -3,21 +3,15 @@
 #include "kit/bip39/wordlist.h"
 #include "third-party/duthomhas/csprng.hpp"
 #include "kit/bip39/generate_entropy.h"
-#include "kit/bip39/to_binary.h"
-#include "kit/bip39/derive_checksum_bits.h"
-#include "kit/bip39/to_hex.h"
-#include "kit/bip39/split.h"
 #include "third-party/fastpbkdf2/fastpbkdf2.h"
 #include "kit/bip39/bip39.h"
 
 int main() {
-    uint8_t * entropy = generate_entropy_uint8(32);
+    uint8_t *entropy = generate_entropy_uint8(32);
 
-    Bip39 * bip39  = new Bip39();
-    auto bip39_seed = bip39->generateSeedWithEntropy(entropy);
-
-    std::cout << "bip39 seed: " << bip39_seed << std::endl;
-
+//    auto mnemonic = Bip39::getWordsFromEntropyBinary(entropy)
+    auto bip39Seed = Bip39::generateSeedWithEntropy(entropy);
+    std::cout << "bip39 seed: " << bip39Seed << std::endl;
 
     delete[] entropy;
     return 0;
@@ -42,8 +36,8 @@ int main() {
 //    std::cout << "entropy binary str: " << entropyBits << "\n";
 //
 //
-////    auto checksumBits = derive_checksum_bits(entropyBits);
-//    auto checksumBitsWithEntropy = derive_checksum_bits(entropy, 32);
+////    auto checksumBits = deriveChecksumBits(entropyBits);
+//    auto checksumBitsWithEntropy = deriveChecksumBits(entropy, 32);
 ////    std::cout << "checksumBits: " << checksumBits << "\n";
 //    std::cout << "checksumBitsWithEntropy: " << checksumBitsWithEntropy << "\n";
 //
