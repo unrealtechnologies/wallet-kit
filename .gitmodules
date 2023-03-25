@@ -1,3 +1,9 @@
 [submodule "third-party/secp256k1"]
 	path = third-party/secp256k1
 	url = https://github.com/bitcoin-core/secp256k1.git
+[submodule "third-party/hmac_sha256"]
+	path = third-party/hmac_sha256
+	url = https://github.com/unrealtechnologies/hmac_sha256
+[submodule "third-party/cryptopp"]
+	path = third-party/cryptopp
+	url = https://github.com/ArielSaldana/cryptopp

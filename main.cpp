@@ -5,15 +5,26 @@
 #include "kit/bip39/generate_entropy.h"
 #include "third-party/fastpbkdf2/fastpbkdf2.h"
 #include "kit/bip39/bip39.h"
+#include "kit/bip32/bip32.h"
 
 int main() {
     uint8_t *entropy = generate_entropy_uint8(32);
 
-//    auto mnemonic = Bip39::getWordsFromEntropyBinary(entropy)
-    auto bip39Seed = Bip39::generateSeedWithEntropy(entropy, 32);
-    std::cout << "bip39 seed: " << bip39Seed << std::endl;
+    auto bip39Seed = Bip39::generateSeedWithEntropyRaw(entropy, 32U);
+    std::cout << "bip39Seed: " << bip39Seed << std::endl;
+
+
+    auto b32 = new bip32();
+    b32->deriveMainKeyAndChainCode(reinterpret_cast<uint8_t (&)[64]>(bip39Seed),
+                                   reinterpret_cast<uint8_t &>(bip39Seed),
+                                   reinterpret_cast<uint8_t &>(bip39Seed));
+
+
 
     delete[] entropy;
+    delete [] bip39Seed;
+    delete b32;
+
     return 0;
 }
 

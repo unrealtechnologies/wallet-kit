@@ -7,11 +7,19 @@
 
 
 #include <cstdint>
+#include <iostream>
 
 class bip32 {
 public:
-    static uint8_t* derivePrivateKey();
-};
+    static uint8_t *derivePrivateKey(uint8_t *);
 
+    static uint8_t *derivePublicKey(uint8_t *privateKey);
+
+    static uint8_t *derivePublicKeyCompressed(uint8_t *privateKey);
+
+    void deriveMainKeyAndChainCode(uint8_t (&bip39Seed)[64], uint8_t (&mainKey), uint8_t (&chainCode));
+
+    std::string sign(std::string key, std::string plain);
+};
 
 #endif //WALLET_KIT_BIP32_H
