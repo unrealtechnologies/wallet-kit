@@ -12,35 +12,72 @@
 #include "../../third-party/duthomhas/csprng.hpp"
 #include "../../third-party/fastpbkdf2/fastpbkdf2.h"
 
-std::string Bip39::generateSeedWithEntropy(uint8_t *entropy) {
-    auto checksumBits = deriveChecksumBits(entropy, 32);
+const size_t singleByteSize = 1U;
 
-    auto entropyBits = char_array_to_binary(entropy, 32);
-
-    if (entropyBits.length() != 256) {
-        std::cout << "ERROR with BINARY" << std::endl;
+void combineArrays(const uint8_t *array1, size_t array1Size,
+                   const uint8_t *array2, size_t array2Size,
+                   uint8_t *combinedArray, size_t combinedArraySize) {
+    if (combinedArraySize < array1Size + array2Size) {
+        throw std::invalid_argument("Combined array size is too small.");
     }
-    auto fullEntropyString = entropyBits + checksumBits;
 
-    if (fullEntropyString.length() % 11 != 0) {
+    // Copy the first array to the beginning of the combined array
+    std::copy(array1, array1 + array1Size, combinedArray);
+
+    // Copy the second array to the end of the first array in the combined array
+    std::copy(array2, array2 + array2Size, combinedArray + array1Size);
+}
+
+std::string Bip39::generateSeedWithEntropy(uint8_t *entropy, const size_t len) {
+    if (len != 16U && len != 32U) {
+        std::cout << "Error: length of entropy must be 16 or 32 bytes" << std::endl;
+    }
+
+    // Get copy checksum value to checksum
+    uint8_t checksum[singleByteSize];
+    deriveChecksumRaw(entropy, len, checksum);
+
+    // calculate the checksum length
+    auto checksumBitsLength = len / (len / sizeof(size_t));
+
+    // fullEntropy
+    uint8_t fullEntropy[len + singleByteSize];
+    combineArrays(
+            entropy,
+            len,
+            checksum,
+            singleByteSize,
+            fullEntropy,
+            len +
+            singleByteSize
+    );
+
+    auto finalLen = (len * sizeof(size_t)) + checksumBitsLength;
+    auto fullEntropyBits = charArrayToBinary(fullEntropy, len + singleByteSize, finalLen);
+
+    if (fullEntropyBits.length() % 11 != 0) {
         std::cout << "ERROR with entropy string w/ checksum" << std::endl;
     }
 
-    auto mnemonic = getWordsFromEntropyBinary(fullEntropyString);
+    auto mnemonic = getWordsStringFromEntropyBits(fullEntropyBits);
 
-    const auto *pw = (const uint8_t *) reinterpret_cast<const uint8_t *>(mnemonic.data());
-    size_t npw = mnemonic.length();
-    const auto *salt = (const uint8_t *) "mnemonic";
-    size_t saltLen = strlen("mnemonic");
-    uint32_t iterations = 2048;
     uint8_t bip39Seed[64];
+    Bip39::generateBip39SeedFromMnemonic(mnemonic, bip39Seed);
 
-    fastpbkdf2_hmac_sha512(pw, npw, salt, saltLen, iterations, bip39Seed, sizeof(bip39Seed));
-
-    return to_hex(bip39Seed, 64);
+    return to_hex(bip39Seed, 64U);
 }
 
-std::string Bip39::getWordsFromEntropyBinary(const std::string &fullEntropyString) {
+void Bip39::generateBip39SeedFromMnemonic(const std::string& mnemonic, uint8_t (&bip39Seed)[64]) {
+    std::vector<uint8_t> password(mnemonic.begin(), mnemonic.end());
+    size_t passwordLength = mnemonic.length();
+    const auto *salt = reinterpret_cast<const uint8_t *>("mnemonic");
+    size_t saltLength = strlen("mnemonic");
+    uint32_t iterations = 2048U;
+
+    fastpbkdf2_hmac_sha512(&password[0], passwordLength, salt, saltLength, iterations, bip39Seed, 64U);
+}
+
+std::string Bip39::getWordsStringFromEntropyBits(const std::string &fullEntropyString) {
     auto wordsBinaryArr = split(fullEntropyString, 11);
 
     std::stringstream seedStringStream;

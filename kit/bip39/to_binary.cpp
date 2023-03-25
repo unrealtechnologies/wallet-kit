@@ -21,6 +21,16 @@ std::string char_array_to_binary(uint8_t* str, size_t len) {
     return binary_str;
 }
 
+std::string charArrayToBinary(uint8_t* input, size_t inputSize, size_t finalStringLength) {
+    size_t size = inputSize;
+    std::string binaryStr;
+    for (int i = 0; i < size; i++) {
+        std::bitset<8> binary_char(input[i]); // convert char to 8-bit binary string
+        binaryStr += binary_char.to_string(); // concatenate binary string to result
+    }
+    return binaryStr.substr(0, finalStringLength);
+}
+
 std::string hex_string_to_binary(std::string hex_string) {
     std::string binary_string;
     for (char const &c: hex_string) {

@@ -32,6 +32,18 @@
 // into groups of 11 bits, and each group is mapped to a corresponding word from the BIP39 wordlist to form the mnemonic
 // phrase.
 
+inline void deriveChecksumRaw(const uint8_t* entropyBytes, const size_t entropyLength, uint8_t *out) {
+    if (entropyLength != 16 && entropyLength != 32) {
+        throw std::invalid_argument("deriveChecksumBits entropy length must be 16 or 32");
+    }
+
+    // Compute the SHA256 hash of the entropy bytes
+    SHA256 sha;
+    sha.update(entropyBytes, entropyLength);
+    uint8_t * digest = sha.digest();
+    *out = digest[0];
+}
+
 inline static std::string deriveChecksumBits(const uint8_t* entropyBytes, size_t entropyLength) {
     if (entropyLength != 16 && entropyLength != 32) {
         throw std::invalid_argument("deriveChecksumBits entropy length must be 16 or 32");
@@ -43,16 +55,16 @@ inline static std::string deriveChecksumBits(const uint8_t* entropyBytes, size_t
     uint8_t * digest = sha.digest();
 
     // Convert the SHA256 hash to a binary string
-    std::string sha256_str = SHA256::toString(digest);
-    std::string sha256_binary_str = hex_string_to_binary(sha256_str);
+    std::string sha256Str = SHA256::toString(digest);
+    std::string sha256BinaryStr = hex_string_to_binary(sha256Str);
 
     // Calculate the number of checksum bits required
-    size_t checksum_bits_length = entropyLength == 32 ? 8 : 4;
+    size_t checksumBitsLength = entropyLength == 32 ? 8 : 4;
 
-    // Extract the first `checksum_bits_length` bits of the SHA256 hash as the checksum bits
-    std::string checksum_bits = sha256_binary_str.substr(0, checksum_bits_length);
+    // Extract the first `checksumBitsLength` bits of the SHA256 hash as the checksum bits
+    std::string checksumBits = sha256BinaryStr.substr(0, checksumBitsLength);
 
-    return checksum_bits;
+    return checksumBits;
 }
 
 #endif //WALLET_KIT_DERIVE_CHECKSUM_BITS_H

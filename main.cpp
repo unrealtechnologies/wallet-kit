@@ -10,7 +10,7 @@ int main() {
     uint8_t *entropy = generate_entropy_uint8(32);
 
 //    auto mnemonic = Bip39::getWordsFromEntropyBinary(entropy)
-    auto bip39Seed = Bip39::generateSeedWithEntropy(entropy);
+    auto bip39Seed = Bip39::generateSeedWithEntropy(entropy, 32);
     std::cout << "bip39 seed: " << bip39Seed << std::endl;
 
     delete[] entropy;
@@ -20,7 +20,7 @@ int main() {
 //int main() {
 //    uint8_t * entropy = generate_entropy_uint8(32);
 //    auto entropyHex = to_hex(entropy, 32);
-//    auto entropyBits = char_array_to_binary(entropy, 32);
+//    auto entropyBits = charArrayToBinary(entropy, 32);
 //
 //
 //    if (entropyHex.length() != 64) {
