@@ -56,7 +56,7 @@ inline static std::string deriveChecksumBits(const uint8_t* entropyBytes, size_t
 
     // Convert the SHA256 hash to a binary string
     std::string sha256Str = SHA256::toString(digest);
-    std::string sha256BinaryStr = hex_string_to_binary(sha256Str);
+    std::string sha256BinaryStr = hexStringToBinary(sha256Str);
 
     // Calculate the number of checksum bits required
     size_t checksumBitsLength = entropyLength == 32 ? 8 : 4;

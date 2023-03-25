@@ -9,15 +9,6 @@
 #include <sstream>
 #include <iomanip>
 
-inline std::string to_hex(char* str, size_t len) {
-    std::stringstream ss;
-    for(int i = 0; i < len; ++i) {
-        ss << std::hex << std::setw(2) << std::setfill('0')  <<  (unsigned int)(unsigned char)str[i];
-    }
-    std::string mystr = ss.str();
-    return mystr;
-}
-
 inline std::string to_hex(uint8_t * str, size_t len) {
     std::stringstream ss;
     for(int i = 0; i < len; ++i) {
@@ -26,6 +17,5 @@ inline std::string to_hex(uint8_t * str, size_t len) {
     std::string mystr = ss.str();
     return mystr;
 }
-
 
 #endif //WALLET_KIT_TO_HEX_H
