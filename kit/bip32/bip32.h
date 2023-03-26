@@ -17,7 +17,9 @@ public:
 
     static uint8_t *derivePublicKeyCompressed(uint8_t *privateKey);
 
-    void deriveMainKeyAndChainCode(uint8_t (&bip39Seed)[64], uint8_t (&mainKey), uint8_t (&chainCode));
+    void deriveMainKeyAndChainCode(uint8_t*bip39Seed, uint8_t *mainKey, uint8_t *chainCode);
+
+    void childKeyDerivationPrivate(uint8_t *key, uint8_t *chainCode, size_t index, uint8_t *k, uint8_t *c);
 
     std::string sign(std::string key, std::string plain);
 };

@@ -90,6 +90,8 @@ std::string Bip39::getWordsStringFromEntropyBits(const std::string &fullEntropyS
 
     std::string mnemonic = seedStringStream.str();
 
+    std::cout << "mnemonic: " << mnemonic << std::endl;
+
     // remove the last space
     mnemonic.pop_back();
     return mnemonic;

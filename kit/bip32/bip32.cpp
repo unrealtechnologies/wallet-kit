@@ -3,6 +3,7 @@
 //
 
 #include "bip32.h"
+#include "../bip39/to_hex.h"
 #include <iostream>
 #include <secp256k1.h>
 #include <hmac_sha256.h>
@@ -11,12 +12,21 @@
 #include <cstring>
 #include <openssl/evp.h>
 
-void bip32::deriveMainKeyAndChainCode(uint8_t (&bip39Seed)[64], uint8_t &mainKey, uint8_t &chainCode) {
+void bip32::deriveMainKeyAndChainCode(uint8_t *bip39Seed, uint8_t *mainKey, uint8_t *chainCode) {
     const char* key = "Bitcoin seed";
     unsigned char digest[EVP_MAX_MD_SIZE];
     unsigned int digest_len;
 
-    HMAC(EVP_sha512(), key, strlen(key), (const unsigned char*) bip39Seed, 64, digest, &digest_len);
+    std::cout << "bip39seed2: " << to_hex(bip39Seed, 64) << std::endl;
+
+    HMAC(EVP_sha512(), key, strlen(key), (const uint8_t*) bip39Seed, 64, digest, &digest_len);
+
+
+    // Copy the first half into the first array
+    std::copy(digest, digest + (digest_len / 2), mainKey);
+
+    // Copy the second half into the second array
+    std::copy(digest + (digest_len / 2), digest + digest_len, chainCode);
 
     std::cout << "HMAC-SHA512 digest: ";
     for (unsigned int i = 0; i < digest_len; ++i) {
@@ -215,6 +225,45 @@ uint8_t *bip32::derivePublicKeyCompressed(uint8_t *privateKey) {
 //    printf("\n\n");
 
     return public_key32;
+}
+
+uint8_t from_big_endian(const uint8_t* data)
+{
+    return ((uint32_t)data[0] << 24) |
+           ((uint32_t)data[1] << 16) |
+           ((uint32_t)data[2] << 8) |
+           ((uint32_t)data[3]);
+}
+
+void to_big_endian(const uint32_t value, uint8_t* output)
+{
+    output[0] = (uint8_t)(value >> 24);
+    output[1] = (uint8_t)(value >> 16);
+    output[2] = (uint8_t)(value >> 8);
+    output[3] = (uint8_t)value;
+}
+
+void bip32::childKeyDerivationPrivate(uint8_t *key, uint8_t *chainCode, size_t index, uint8_t *k, uint8_t *c) {
+
+    // hardened key
+    if (index < 2147483648) {
+        const char* key = "Bitcoin seed";
+        unsigned char digest[EVP_MAX_MD_SIZE];
+        unsigned int digest_len;
+
+        //If so (hardened child): let I = HMAC-SHA512(Key = cpar, Data = 0x00 || ser256(kpar) || ser32(i)).
+        uint8_t* hmacKey = (uint8_t*)std::malloc(32 + 1);
+        std::memcpy(&hmacKey[1], key, 32);
+        hmacKey[0] = 0x00;
+
+        HMAC(EVP_sha512(), chainCode, 32, hmacKey, 33, digest, &digest_len);
+
+        // Copy the first half into the first array
+        std::copy(digest, digest + (digest_len / 2), k);
+
+        // Copy the second half into the second array
+        std::copy(digest + (digest_len / 2), digest + digest_len, c);
+    }
 }
 
 
