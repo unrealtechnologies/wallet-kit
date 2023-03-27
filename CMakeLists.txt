@@ -3,6 +3,22 @@ project(wallet_kit_lib)
 
 set(CMAKE_CXX_STANDARD 20)
 
+message(STATUS "Fetching Catch2")
+include(FetchContent)
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        devel
+)
+FetchContent_MakeAvailable(Catch2)
+#
+#
+#if (NOT TARGET Catch2)
+#    add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/Catch2)
+#endif ()
+#include_directories(${CMAKE_SOURCE_DIR}/third-party/Catch2/src)
+#include_directories(${CMAKE_SOURCE_DIR}/third-party/Catch2/src/internal)
+
 link_directories(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
 include_directories(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
 MESSAGE(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
@@ -21,5 +37,14 @@ target_include_directories(wallet_kit_lib PUBLIC
         SYSTEM INTERFACE /usr/include
         )
 
+add_executable(tests test/test.cpp)
+target_link_libraries(
+        tests
+        PRIVATE Catch2::Catch2WithMain
+        wallet_kit_lib
+)
 
-#add_dependencies(wallet_kit_lib botan)
+target_include_directories(tests PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        )
+#add_dependencies(wallet_kit_lib botan)rof
