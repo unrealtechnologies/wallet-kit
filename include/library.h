@@ -1,0 +1,6 @@
+#ifndef WALLET_KIT_LIB_LIBRARY_H
+#define WALLET_KIT_LIB_LIBRARY_H
+
+void hello();
+
+#endif //WALLET_KIT_LIB_LIBRARY_H
