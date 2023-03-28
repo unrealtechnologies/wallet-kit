@@ -43,7 +43,7 @@ target_include_directories(wallet_kit_lib PUBLIC
         SYSTEM INTERFACE /usr/include
         )
 
-add_executable(tests test/test.cpp include/wallet-kit/bip32/bip32.h)
+add_executable(tests test/test.cpp include/wallet-kit/bip32.h)
 target_link_libraries(
         tests
         PRIVATE Catch2::Catch2WithMain

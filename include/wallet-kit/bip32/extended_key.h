@@ -13,6 +13,8 @@ struct ExtendedKey {
     std::vector<uint8_t> key;
     std::vector<uint8_t> chainCode;
     size_t index;
+
+    std::string toBase58();
 };
 
 #endif //WALLET_KIT_LIB_EXTENDED_KEY_H
