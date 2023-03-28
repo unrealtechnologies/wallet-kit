@@ -23,6 +23,12 @@ TEST_CASE( "Bip39 mnemonics are derived correctly", "[entropyToMnemonic]" ) {
     std::string entropyHexStr = "c94c3a10b50450a4eaeee90e45ca90f551ef08266942b4bc4ad821e517e7a24a";
     std::vector<uint8_t> entropyBytes = walletKitUtils::hexStringToBytes(entropyHexStr);
     auto mnemonic = Bip39::entropyToMnemonic(entropyBytes);
-    std::string mnemonicRealValue = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
-    REQUIRE( mnemonic == mnemonicRealValue );
+    REQUIRE( mnemonic == "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune" );
+}
+
+TEST_CASE( "Bip39 seed is derived correctly from mnemonic", "[entropyToMnemonic]" ) {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto seedHex = walletKitUtils::to_hex(seed, 64);
+    REQUIRE( seedHex == "8b3d3c2f07e8eefee19f3426607d4ed156aac2c3362a05746827c85954e60a10ae78b5a04c195ebbd53e2abb34c3d4989fd635c7dd1c151f6a7c16439a6c9dda");
 }

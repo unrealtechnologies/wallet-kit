@@ -3,12 +3,18 @@ project(wallet_kit_lib)
 
 set(CMAKE_CXX_STANDARD 20)
 
+MESSAGE(${CMAKE_BINARY_DIR})
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 message(STATUS "Fetching Catch2")
 include(FetchContent)
 FetchContent_Declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        devel
+        GIT_TAG devel
 )
 FetchContent_MakeAvailable(Catch2)
 #
@@ -23,11 +29,11 @@ link_directories(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
 include_directories(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
 MESSAGE(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
 
-add_library(wallet_kit_lib SHARED src/library.cpp include/wallet-kit/bip32.h src/bip32/bip32.cpp include/wallet-kit/bip39.h src/bip39/bip39.cpp include/wallet-kit/bip39/english_wordlist.h include/utils.h)
+add_library(wallet_kit_lib SHARED src/library.cpp include/wallet-kit/bip32.h src/bip32/bip32.cpp include/wallet-kit/bip39.h src/bip39/bip39.cpp include/wallet-kit/bip39/english_wordlist.h include/utils.h include/wallet-kit/bip32/extended_key.h)
 
 target_link_libraries(
         wallet_kit_lib
-#        PRIVATE botan
+        #        PRIVATE botan
         ${CMAKE_SOURCE_DIR}/third-party/botan/libbotan-3.a
 )
 
@@ -37,7 +43,7 @@ target_include_directories(wallet_kit_lib PUBLIC
         SYSTEM INTERFACE /usr/include
         )
 
-add_executable(tests test/test.cpp)
+add_executable(tests test/test.cpp include/wallet-kit/bip32/bip32.h)
 target_link_libraries(
         tests
         PRIVATE Catch2::Catch2WithMain
