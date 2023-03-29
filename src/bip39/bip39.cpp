@@ -6,10 +6,8 @@
 #include <wallet-kit/bip39.h>
 #include <wallet-kit/bip39/english_wordlist.h>
 #include <botan/hash.h>
-#include <botan/pbkdf.h>
 #include <botan/pbkdf2.h>
 #include <botan/mac.h>
-#include <botan/auto_rng.h>
 #include <botan/types.h>
 
 std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
@@ -81,7 +79,7 @@ std::vector<uint8_t> Bip39::getEntropyChecksum(std::vector<uint8_t> &entropy) {
     std::unique_ptr<Botan::HashFunction> hash256(Botan::HashFunction::create("SHA-256"));
 
     hash256->update(entropy.data(), entropy.size());
-    Botan::concepts::resizable_byte_buffer auto digest = hash256->final();
+    auto digest = hash256->final();
     auto hash = std::vector<uint8_t>(digest.begin(), digest.end());
 
     uint8_t checksum = hash[0];

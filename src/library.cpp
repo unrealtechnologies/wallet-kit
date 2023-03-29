@@ -2,7 +2,7 @@
 #include <iostream>
 #include <botan/hex.h>
 #include <botan/hash.h>
-#include <botan/mac.h>
+#include "botan/mac.h"
 
 static std::string compute_mac(const std::string &msg, const std::vector<uint8_t> &key) {
     auto hmac = Botan::MessageAuthenticationCode::create_or_throw("HMAC(SHA-512)");
