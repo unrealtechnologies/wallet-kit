@@ -1,70 +1,3 @@
-#cmake_minimum_required(VERSION 3.24)
-#project(wallet_kit_lib)
-#
-#set(CMAKE_CXX_STANDARD 20)
-#
-#MESSAGE(${CMAKE_BINARY_DIR})
-#
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-#
-#message(STATUS "Fetching Catch2")
-#include(FetchContent)
-#FetchContent_Declare(
-#        Catch2
-#        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-#        GIT_TAG devel
-#)
-#FetchContent_MakeAvailable(Catch2)
-#
-#message(STATUS "Fetching botan")
-#include(FetchContent)
-#FetchContent_Declare(
-#        botan
-#        GIT_REPOSITORY https://github.com/randombit/botan.git
-#        GIT_TAG 2.19.3
-#)
-#FetchContent_MakeAvailable(botan)
-##
-##
-##if (NOT TARGET Catch2)
-##    add_subdirectory(${CMAKE_SOURCE_DIR}/third-party/Catch2)
-##endif ()
-##include_directories(${CMAKE_SOURCE_DIR}/third-party/Catch2/src)
-##include_directories(${CMAKE_SOURCE_DIR}/third-party/Catch2/src/internal)
-#
-##link_directories(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
-##include_directories(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
-##MESSAGE(${CMAKE_SOURCE_DIR}/third-party/botan/build/include)
-#
-#add_library(wallet_kit_lib SHARED src/library.cpp include/wallet-kit/bip32.h src/bip32/bip32.cpp include/wallet-kit/bip39.h src/bip39/bip39.cpp include/wallet-kit/bip39/english_wordlist.h include/utils.h include/wallet-kit/bip32/extended_key.h src/bip32/extended_key.cpp include/wallet-kit/bip32/hdw.h src/bip32/hdw.cpp)
-#
-#target_link_libraries(
-#        wallet_kit_lib
-#        PRIVATE botan
-##        ${CMAKE_SOURCE_DIR}/third-party/botan/libbotan-3.a
-#)
-#
-## Add system-level include directories with angle brackets
-#target_include_directories(wallet_kit_lib PUBLIC
-#        ${CMAKE_CURRENT_SOURCE_DIR}/include
-#        SYSTEM INTERFACE /usr/include
-#        )
-#
-#add_executable(tests test/test.cpp)
-#target_link_libraries(
-#        tests
-#        PRIVATE Catch2::Catch2WithMain
-#        PRIVATE botan
-#        wallet_kit_lib
-#)
-#
-#target_include_directories(tests PUBLIC
-#        ${CMAKE_CURRENT_SOURCE_DIR}/include
-#        )
-##add_dependencies(wallet_kit_lib botan)rof
-
 cmake_minimum_required(VERSION 3.24)
 project(wallet_kit_lib)
 
@@ -82,6 +15,15 @@ FetchContent_Declare(
         GIT_TAG devel
 )
 FetchContent_MakeAvailable(Catch2)
+
+# Fetch and configure secp256k1
+include(FetchContent)
+FetchContent_Declare(
+        secp256k1
+        GIT_REPOSITORY https://github.com/bitcoin-core/secp256k1.git
+        GIT_TAG master
+)
+FetchContent_MakeAvailable(secp256k1)
 
 ### New Botan Include
 include(FetchContent)
@@ -133,7 +75,6 @@ if (NOT ${lcName}_POPULATED)
             )
 endif ()
 
-
 # Define library target
 add_library(wallet_kit_lib SHARED
         src/library.cpp
@@ -141,26 +82,28 @@ add_library(wallet_kit_lib SHARED
         src/bip39/bip39.cpp
         src/bip32/extended_key.cpp
         src/bip32/hdw.cpp
-        )
+        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp)
 
-target_include_directories(wallet_kit_lib PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+target_include_directories(wallet_kit_lib
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${secp256k1_SOURCE_DIR}/include
         )
 
 target_link_libraries(wallet_kit_lib
         Botan::botan
+        secp256k1
         )
 
 # Define tests target
-add_executable(tests
+add_executable(wallet_kit_tests
         test/test.cpp
         )
 
-target_include_directories(tests PUBLIC
+target_include_directories(wallet_kit_tests PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         )
 
-target_link_libraries(tests
+target_link_libraries(wallet_kit_tests
         PRIVATE Catch2::Catch2WithMain
         wallet_kit_lib
         )

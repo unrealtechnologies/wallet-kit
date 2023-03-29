@@ -34,13 +34,24 @@ TEST_CASE( "Bip39 seed is derived correctly from mnemonic", "[entropyToMnemonic]
     REQUIRE( seedHex == "8b3d3c2f07e8eefee19f3426607d4ed156aac2c3362a05746827c85954e60a10ae78b5a04c195ebbd53e2abb34c3d4989fd635c7dd1c151f6a7c16439a6c9dda");
 }
 
-TEST_CASE( "Bip32 extended key from Bip39 Seed", "[fromSeed]" ) {
+TEST_CASE( "Bip32 extended private key from Bip39 Seed", "[fromSeed]" ) {
     std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
     auto seed = Bip39::mnemonicToSeed(mnemonic);
     auto rootExtendedKey = Bip32::fromSeed(seed);
     REQUIRE( walletKitUtils::to_hex(rootExtendedKey->key, 32) == "3f61cacd5557d1dfd98a363e0e1af2c91fd83cbd36ec2de9f14f2e2b00b3f09b");
     REQUIRE( walletKitUtils::to_hex(rootExtendedKey->chainCode, 32) == "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
 }
+
+TEST_CASE( "Bip32 extended public key from Bip39 Seed", "[derivePublicChildKey]" ) {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootExtendedKey = Bip32::fromSeed(seed);
+    auto rootPublicKey = Bip32::derivePublicChildKey(*rootExtendedKey);
+
+    REQUIRE( walletKitUtils::to_hex(rootPublicKey->key, 33) == "031012b6a7b8e293198f9c798b8083c3e171cd0bdd42490d4b00995d4335cbe2f9");
+    REQUIRE( walletKitUtils::to_hex(rootPublicKey->chainCode, 32) == "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
+}
+
 
 TEST_CASE( "Bip32 extended key serializes to base58", "[fromSeed]" ) {
     std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";

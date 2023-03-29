@@ -11,6 +11,9 @@
 class Bip32 {
 public:
     static std::unique_ptr<ExtendedKey> fromSeed(std::vector<uint8_t> &seed);
+
+    static std::unique_ptr<ExtendedKey> derivePublicChildKey(ExtendedKey &key);
+
 };
 
 #endif //WALLET_KIT_LIB_BIP32_H

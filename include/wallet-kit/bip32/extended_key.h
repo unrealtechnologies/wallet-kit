@@ -7,21 +7,16 @@
 
 #include <iostream>
 #include <vector>
-#include <map>
-#include <unordered_map>
 
 // An extended key is defined as a construct of (k, c) k being the normal key, and c being the chaincode.
 struct ExtendedKey {
     std::vector<uint8_t> key;
     std::vector<uint8_t> chainCode;
-    std::unordered_map<size_t, ExtendedKey> children;
-
-    size_t index;
-//    size_t depth;
-
 
     std::string toBase58();
+
     std::vector<uint8_t> serialize();
+
     static std::vector<uint8_t> doubleSha256(std::vector<uint8_t> &data);
 };
 
