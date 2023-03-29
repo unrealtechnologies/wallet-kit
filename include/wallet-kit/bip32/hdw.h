@@ -9,10 +9,10 @@
 
 // Hierarchical Deterministic Wallets
 class HDW {
+    ExtendedKey root;
 
     explicit HDW(std::shared_ptr<ExtendedKey> &extendedKey);
 
-    ExtendedKey root;
 
 public:
     ExtendedKey getRoot() {

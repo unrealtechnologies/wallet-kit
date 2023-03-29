@@ -17,10 +17,12 @@ struct ExtendedKey {
     std::unordered_map<size_t, ExtendedKey> children;
 
     size_t index;
-    size_t depth;
+//    size_t depth;
 
 
-    static std::string toBase58();
+    std::string toBase58();
+    std::vector<uint8_t> serialize();
+    static std::vector<uint8_t> doubleSha256(std::vector<uint8_t> &data);
 };
 
 #endif //WALLET_KIT_LIB_EXTENDED_KEY_H
