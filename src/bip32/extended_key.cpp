@@ -10,6 +10,10 @@
 #include <botan/sha2_32.h>
 
 std::string ExtendedKey::toBase58() {
+    if (this->context == nullptr) {
+        throw std::runtime_error("ExtendedKey context is null");
+    }
+
     auto serializedStructure = this->serialize();
     auto base58EncodedString = Botan::base58_encode(serializedStructure);
     return base58EncodedString;
@@ -21,27 +25,18 @@ std::vector<uint8_t> ExtendedKey::serialize() {
 
     const std::vector<uint8_t> privateVersion = {0x04, 0x88, 0xAD, 0xE4};     // 4 bytes version
     const std::vector<uint8_t> publicVersion = {0x04, 0x88, 0xB2, 0x1E};     // 4 bytes version
-    const std::vector<uint8_t> depth = {0x00};                       // 1 byte depth
-    const std::vector<uint8_t> fingerprint = {0x00, 0x00, 0x00, 0x00};     // 4 bytes fingerprint
-    const std::vector<uint8_t> childNumber = {0x00, 0x00, 0x00, 0x00};     // 4 bytes child number
-    const std::vector<uint8_t> publicKeyPrefix = {0x00};                       // 4 bytes child number
 
     if (this->key.size() == 32) {
         structure.insert(structure.end(), privateVersion.begin(), privateVersion.end());
     } else {
         structure.insert(structure.end(), publicVersion.begin(), publicVersion.end());
     }
-    structure.insert(structure.end(), depth.begin(), depth.end());
 
-//    if (this->key.size() == 32) {
-//        structure.insert(structure.end(), fingerprint.begin(), fingerprint.end());
-//    } else {
-//        auto fingerprint = ExtendedKey::fingerPrint(this->key);
-//        structure.insert(structure.end(), fingerprint.begin(), fingerprint.begin() + 4);
-//    }
-    structure.insert(structure.end(), fingerprint.begin(), fingerprint.end());
-    structure.insert(structure.end(), childNumber.begin(), childNumber.end());
+    structure.insert(structure.end(), reinterpret_cast<const uint8_t*>(&this->context->depth), reinterpret_cast<const uint8_t*>(&this->context->depth) + sizeof(this->context->depth));
+    structure.insert(structure.end(), reinterpret_cast<const uint8_t*>(&this->context->fingerprint), reinterpret_cast<const uint8_t*>(&this->context->fingerprint) + sizeof(this->context->fingerprint));
+    structure.insert(structure.end(), reinterpret_cast<const uint8_t*>(&this->context->childNumber), reinterpret_cast<const uint8_t*>(&this->context->childNumber) + sizeof(this->context->childNumber));
     structure.insert(structure.end(), this->chainCode.begin(), this->chainCode.end());
+
     if (this->key.size() == 32) {
         structure.push_back(0x00);
     }
@@ -75,7 +70,7 @@ std::vector<uint8_t> ExtendedKey::doubleSha256(std::vector<uint8_t> &data) {
     return {secondSha256.begin(), secondSha256.end()};
 }
 
-std::vector<uint8_t> ExtendedKey::fingerPrint(std::vector<uint8_t> &key) {
+std::vector<uint8_t> ExtendedKey::fingerPrint(const std::vector<uint8_t> &key) {
     // Compute the first SHA256 hash
     auto hash256 = Botan::SHA_256();
     hash256.update(key.data(), key.size());

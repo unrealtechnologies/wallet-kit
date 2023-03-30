@@ -17,7 +17,15 @@
 ChainNode::ChainNode(
         std::string &path,
         std::unique_ptr<ExtendedKey> privateKey,
-        std::unique_ptr<ExtendedKey> publicKey) : privateKey(std::move(privateKey)), publicKey(std::move(publicKey)) {
-    this->localPath = path;
-}
+        std::unique_ptr<ExtendedKey> publicKey) :
+        localPath(path),
+        privateKey(std::move(privateKey)),
+        publicKey(std::move(publicKey)) {
+    if (localPath != "m") {
+       auto fingerprint = privateKey->fingerPrint(privateKey->key);
+       std::cout << privateKey << std::endl;
+    } else {
+        std::cout << "not m" << std::endl;
+    }
+};
 

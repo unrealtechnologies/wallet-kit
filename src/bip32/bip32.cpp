@@ -8,6 +8,8 @@
 #include <secp256k1.h>
 #include <utils.h>
 
+#include <memory>
+
 static std::vector<uint8_t> compute_mac(const std::vector<uint8_t> &msg, const std::vector<uint8_t> &key) {
     auto hmac = Botan::MessageAuthenticationCode::create_or_throw("HMAC(SHA-512)");
 
@@ -24,10 +26,14 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
     std::string keyString = "Bitcoin seed";
     std::vector<uint8_t> key(keyString.begin(), keyString.end());
     auto extendedKeyRaw = compute_mac(seed, key);
-    size_t extendedKeyHalfwayIndex = extendedKeyRaw.size() / 2;
+    uint32_t extendedKeyHalfwayIndex = extendedKeyRaw.size() / 2;
+
+    // default chain node context
+    std::shared_ptr<ChainNodeContext> context(new ChainNodeContext(0, 0, 0));
 
     // private key
     std::unique_ptr<ExtendedKey> extendedPrivateKey(new ExtendedKey());
+    extendedPrivateKey->context = context;
     extendedPrivateKey->key = std::vector<uint8_t>(
             extendedKeyRaw.begin(),
             extendedKeyRaw.begin() + extendedKeyHalfwayIndex
@@ -41,7 +47,11 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
 
     std::string path = "m";
     std::unique_ptr<ChainNode> chainNode(
-            new ChainNode(path, std::move(extendedPrivateKey), std::move(extendedPublicKey))
+            new ChainNode(
+                    path,
+                    std::move(extendedPrivateKey),
+                    std::move(extendedPublicKey)
+            )
     );
 
 
@@ -84,11 +94,16 @@ std::unique_ptr<ExtendedKey> Bip32::derivePublicChildKey(const ExtendedKey &key)
     std::unique_ptr<ExtendedKey> extendedKey(new ExtendedKey());
     extendedKey->key = std::vector<uint8_t>(public_key33.get(), public_key33.get() + 33);
     extendedKey->chainCode = key.chainCode;
+    extendedKey->context = key.context;
 
     return extendedKey;
 }
 
-std::unique_ptr<ExtendedKey> Bip32::derivePrivateChildKey(const ExtendedKey& parentKey, uint32_t index, bool hardened) {
+std::unique_ptr<ExtendedKey> Bip32::derivePrivateChildKey(const ExtendedKey &parentKey, uint32_t index, bool hardened) {
+
+
+//    auto fingerprint = parentKey.fingerPrint()
+
     secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
     // Determine whether the child key is hardened or not
@@ -112,19 +127,85 @@ std::unique_ptr<ExtendedKey> Bip32::derivePrivateChildKey(const ExtendedKey& par
     std::vector<uint8_t> IR(I.begin() + 32, I.end());
 
     // Derive child private key
-    std::vector<uint8_t> childKey(32);
-    if (!secp256k1_ec_seckey_tweak_add(ctx, childKey.data(), parentKey.key.data())) {
-        printf("Failed to derive child private key\n");
+//    std::vector<uint8_t> childKey(32);
+    std::vector<uint8_t> childKey(parentKey.key);
+
+//    if (!secp256k1_ec_seckey_tweak_add(ctx, IL.data(), parentKey.key.data())) {
+    if (!secp256k1_ec_seckey_tweak_add(ctx, childKey.data(), IL.data())) {
+        throw std::runtime_error("Failed to derive child private key");
     }
 
     // Compute child chain code
-    std::vector<uint8_t> childChainCode = IR;
+    const std::vector<uint8_t> &childChainCode = IR;
+
+    auto context = std::make_shared<ChainNodeContext>(
+            ++parentKey.context->depth,
+            0,
+            0
+    );
 
     // Construct child extended key
     std::unique_ptr<ExtendedKey> childExtendedKey(new ExtendedKey());
     childExtendedKey->key = childKey;
     childExtendedKey->chainCode = childChainCode;
+    childExtendedKey->context = context;
 
     return childExtendedKey;
 }
+
+//std::unique_ptr<ExtendedKey> Bip32::derivePrivateChildKey(ExtendedKey &parentKey, uint32_t index) {
+//    uint32_t HARDENED_OFFSET = 0x80000000; //2147483648
+//    if (index < HARDENED_OFFSET) {
+//        throw std::invalid_argument("Invalid index: index must be a hardened index.");
+//    }
+//    if (parentKey.key.size() != 32) {
+//        throw std::invalid_argument("Invalid parent key: key must be a 32-byte private key.");
+//    }
+//
+//    secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+//    secp256k1_pubkey pubkey;
+//    secp256k1_ecdsa_signature signature;
+//
+//    // Compute the child key index
+//    uint32_t childIndex = index | HARDENED_OFFSET;
+//
+//    // Serialize the parent public key
+//    unsigned char parentPublicKey[33];
+//    size_t parentPublicKeySize = sizeof(parentPublicKey);
+//    if (!secp256k1_ec_pubkey_create(ctx, &pubkey, parentKey.key.data()) ||
+//        !secp256k1_ec_pubkey_serialize(ctx, parentPublicKey, &parentPublicKeySize, &pubkey, SECP256K1_EC_COMPRESSED)) {
+//        throw std::runtime_error("Failed to serialize parent public key");
+//    }
+//
+//    // Create the message for computing the HMAC
+//    std::vector<uint8_t> message(37);
+//    std::memcpy(message.data(), parentPublicKey, parentPublicKeySize);
+////    Utils::pack32BE(childIndex, message.data() + parentPublicKeySize);
+//
+//    // Compute the HMAC of the message using the parent chain code as the key
+//    auto hmac = Botan::MessageAuthenticationCode::create_or_throw("HMAC(SHA-512)");
+//    hmac->set_key(parentKey.chainCode);
+//    hmac->update(message);
+//    std::vector<uint8_t> hmacResult = hmac->final();
+//
+//    // Split the HMAC into two 32-byte parts
+//    std::vector<uint8_t> hmacLeft(hmacResult.begin(), hmacResult.begin() + 32);
+//    std::vector<uint8_t> hmacRight(hmacResult.begin() + 32, hmacResult.end());
+//
+//    // Compute the child private key by adding the left HMAC to the parent private key
+//    std::vector<uint8_t> childKey(32);
+//    if (!secp256k1_ec_seckey_tweak_add(ctx, childKey.data(), parentKey.key.data())) {
+//        throw std::runtime_error("Failed to derive child private key");
+//    }
+//
+//    // Compute the chain code by using the right HMAC
+//    std::unique_ptr<ExtendedKey> childKeyPtr(new ExtendedKey());
+//    childKeyPtr->key = childKey;
+//    childKeyPtr->chainCode = hmacRight;
+//
+//    secp256k1_context_destroy(ctx);
+//
+//    return childKeyPtr;
+//}
+
 

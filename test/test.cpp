@@ -9,17 +9,6 @@
 #include <wallet-kit/bip32.h>
 #include <utils.h>
 
-uint32_t factorial(uint32_t number) {
-    return number <= 1 ? number : factorial(number - 1) * number;
-}
-
-TEST_CASE("Factorials are computed", "[factorial]") {
-    REQUIRE(factorial(1) == 1);
-    REQUIRE(factorial(2) == 2);
-    REQUIRE(factorial(3) == 6);
-    REQUIRE(factorial(10) == 3'628'800);
-}
-
 TEST_CASE("Bip39 mnemonics are derived correctly", "[entropyToMnemonic]") {
     std::string entropyHexStr = "c94c3a10b50450a4eaeee90e45ca90f551ef08266942b4bc4ad821e517e7a24a";
     std::vector<uint8_t> entropyBytes = walletKitUtils::hexStringToBytes(entropyHexStr);
@@ -109,6 +98,15 @@ SCENARIO("main chain node can be created.") {
                 REQUIRE(base58EncodedString == "xpub661MyMwAqRbcFgvZzaWhT4BNm5H4gL3WQpmagzMGkuXv1CtPpSz18Ap57kHmYCZKuDNN5hdHzkanQY8DyjsPZAbZeNREkpX5DrZmXwS6QRb");
             }
         }
+
+        WHEN("The root private key is used to derive a private key") {
+            auto privateExtendedKey = Bip32::derivePrivateChildKey(*rootPrivateExtendedKey, 0, true);
+//            std::cout << things->toBase58() << std::endl;
+//            auto extendedPublicKey = derivePublicChildKey(privateExtendedKey.get());
+            THEN("The base58 encoded string is correct") {
+                REQUIRE(privateExtendedKey->toBase58() == "xprv9uXf9j4vLU4LJ8uDsAWnECLm69qZo6rsGGHM5hrAfHsikZEkG6AQsVji64pdwMUom9bLbmCbb8ARBUdvqYu6GpwVoCmmZ6Jp6FUTskLZFgJ");
+            }
+        }
     }
 }
 
@@ -116,22 +114,23 @@ TEST_CASE("Bip32 extended private key from Bip39 Seed", "[fromSeed]") {
     std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
     auto seed = Bip39::mnemonicToSeed(mnemonic);
     auto rootChainNode = Bip32::fromSeed(seed);
-    auto rootPrivateExtendedKey = std::move(rootChainNode->privateKey);
-    auto rootPublicExtendedKey = std::move(rootChainNode->publicKey);
+    ExtendedKey rootPrivateExtendedKey = *rootChainNode->privateKey;
+    ExtendedKey rootPublicExtendedKey = *rootChainNode->publicKey;
 
     REQUIRE(rootChainNode->localPath == "m");
     REQUIRE(
-            walletKitUtils::to_hex(rootPrivateExtendedKey->key, 32) ==
+            walletKitUtils::to_hex(rootPrivateExtendedKey.key, 32) ==
             "3f61cacd5557d1dfd98a363e0e1af2c91fd83cbd36ec2de9f14f2e2b00b3f09b");
-    REQUIRE(walletKitUtils::to_hex(rootPrivateExtendedKey->chainCode, 32) ==
+    REQUIRE(walletKitUtils::to_hex(rootPrivateExtendedKey.chainCode, 32) ==
             "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
 
-    REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey->key, 33) ==
+    REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey.key, 33) ==
             "031012b6a7b8e293198f9c798b8083c3e171cd0bdd42490d4b00995d4335cbe2f9");
-    REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey->chainCode, 32) ==
+    REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey.chainCode, 32) ==
             "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
 
-
+//    auto things = Bip32::derivePrivateChildKey(*rootPrivateExtendedKey, 0, true);
+//    std::cout << things->toBase58() << std::endl;
 }
 
 //TEST_CASE( "Bip32 extended private key serializes to base58", "[fromSeed]" ) {
