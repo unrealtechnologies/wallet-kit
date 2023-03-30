@@ -7,12 +7,14 @@
 
 #include <iostream>
 #include "wallet-kit/bip32/extended_key.h"
+#include "wallet-kit/bip32/chain_node.h"
 
 class Bip32 {
 public:
-    static std::unique_ptr<ExtendedKey> fromSeed(std::vector<uint8_t> &seed);
+    static std::unique_ptr<ChainNode> fromSeed(std::vector<uint8_t> &seed);
 
-    static std::unique_ptr<ExtendedKey> derivePublicChildKey(ExtendedKey &key);
+    static std::unique_ptr<ExtendedKey> derivePublicChildKey(const ExtendedKey &key);
+    static std::unique_ptr<ExtendedKey> derivePrivateChildKey(const ExtendedKey& parentKey, uint32_t index, bool hardened);
 
 };
 

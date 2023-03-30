@@ -12,11 +12,11 @@
 struct ChainNode {
     std::string localPath;
     std::string fullPath;
-    ExtendedKey privateKey;
-    ExtendedKey publicKey;
+    std::unique_ptr<ExtendedKey> privateKey;
+    std::unique_ptr<ExtendedKey> publicKey;
     std::unordered_map<std::string, ChainNode> children;
 
-    explicit ChainNode(std::string &path, ExtendedKey &publicKey, ExtendedKey &privateKey);
+    explicit ChainNode(std::string &path, std::unique_ptr<ExtendedKey> publicKey, std::unique_ptr<ExtendedKey> privateKey);
 
     void addChildren(const std::string& path, const ChainNode& child);
 };
