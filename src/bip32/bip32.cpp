@@ -67,7 +67,7 @@ std::unique_ptr<ExtendedKey> Bip32::derivePublicChildKey(ExtendedKey &key) {
                                   SECP256K1_EC_COMPRESSED);
 
     std::unique_ptr<ExtendedKey> extendedKey(new ExtendedKey());
-    extendedKey->key = std::vector<uint8_t>(public_key33, public_key33 + 34);
+    extendedKey->key = std::vector<uint8_t>(public_key33, public_key33 + 33);
     extendedKey->chainCode = key.chainCode;
 
     return extendedKey;

@@ -53,10 +53,19 @@ TEST_CASE( "Bip32 extended public key from Bip39 Seed", "[derivePublicChildKey]"
 }
 
 
-TEST_CASE( "Bip32 extended key serializes to base58", "[fromSeed]" ) {
+TEST_CASE( "Bip32 extended private key serializes to base58", "[fromSeed]" ) {
     std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
     auto seed = Bip39::mnemonicToSeed(mnemonic);
     auto rootExtendedKey = Bip32::fromSeed(seed);
     auto base58EncodedString = rootExtendedKey->toBase58();
     REQUIRE( base58EncodedString == "xprv9s21ZrQH143K3Cr6tYyh5vEeD3SaGsKf3bqytbwfCZzw8QZFGufkaNVbGTg6MzFGkfPzMJa415XX7TUni8i3H84akgjG1i4YYavxQbq1krK");
+}
+
+TEST_CASE( "Bip32 extended public key serializes to base58", "[fromSeed]" ) {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootExtendedKey = Bip32::fromSeed(seed);
+    auto rootPublicKey = Bip32::derivePublicChildKey(*rootExtendedKey);
+    auto base58EncodedString = rootPublicKey->toBase58();
+    REQUIRE( base58EncodedString == "xpub661MyMwAqRbcFgvZzaWhT4BNm5H4gL3WQpmagzMGkuXv1CtPpSz18Ap57kHmYCZKuDNN5hdHzkanQY8DyjsPZAbZeNREkpX5DrZmXwS6QRb");
 }

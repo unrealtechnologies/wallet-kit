@@ -18,6 +18,8 @@ struct ExtendedKey {
     std::vector<uint8_t> serialize();
 
     static std::vector<uint8_t> doubleSha256(std::vector<uint8_t> &data);
+
+    static std::vector<uint8_t> fingerPrint(std::vector<uint8_t> &data);
 };
 
 #endif //WALLET_KIT_LIB_EXTENDED_KEY_H
