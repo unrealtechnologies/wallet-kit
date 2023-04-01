@@ -82,7 +82,7 @@ add_library(wallet_kit_lib SHARED
         src/bip39/bip39.cpp
         src/bip32/extended_key.cpp
         src/bip32/hdw.cpp
-        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp)
+        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/crypto_utils.h)
 
 target_include_directories(wallet_kit_lib
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include

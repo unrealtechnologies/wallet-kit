@@ -6,8 +6,8 @@
 #define WALLET_KIT_LIB_CHAIN_NODE_H
 
 #include <iostream>
-#include "extended_key.h"
 #include <unordered_map>
+#include <wallet-kit/bip32/extended_key.h>
 #include <wallet-kit/bip32/chain_node_context.h>
 
 struct ChainNode {
@@ -18,9 +18,15 @@ struct ChainNode {
     std::shared_ptr<ChainNodeContext> context;
 
 
-    explicit ChainNode(std::string &path, std::unique_ptr<ExtendedKey> privateKey, std::unique_ptr<ExtendedKey> publicKey);
+    explicit ChainNode(std::string &path, std::unique_ptr<ExtendedKey> privateKey,
+                       std::unique_ptr<ExtendedKey> publicKey);
 
-    void addChildren(const std::string& path, const ChainNode& child);
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey(bool usingPrivateKey) const;
+
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildExtendedKey(bool withPrivateKey) const;
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(bool withPrivateKey) const;
+
+//    void addChildren(const std::string &path, const ChainNode &child);
 };
 
 #endif //WALLET_KIT_LIB_CHAIN_NODE_H

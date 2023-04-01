@@ -39,36 +39,34 @@ SCENARIO("main chain node can be created.") {
         }
 
         auto rootChainNode = Bip32::fromSeed(seed);
-        auto rootPrivateExtendedKey = std::move(rootChainNode->privateKey);
-        auto rootPublicExtendedKey = std::move(rootChainNode->publicKey);
+        auto rootPrivateExtendedKey = *rootChainNode->privateKey;
+        auto rootPublicExtendedKey = *rootChainNode->publicKey;
 
         WHEN("A chain node is created from a bip39 seed") {
             THEN("Chain node local path is correct") {
                 REQUIRE(rootChainNode->localPath == "m");
-            }
-
-            THEN("Chain node private key length is correct") {
-                REQUIRE(rootPrivateExtendedKey->key.size() == 32);
+            }THEN("Chain node private key length is correct") {
+                REQUIRE(rootPrivateExtendedKey.key.size() == 32);
             }THEN("Chain node private chain code length is correct") {
-                REQUIRE(rootPrivateExtendedKey->chainCode.size() == 32);
+                REQUIRE(rootPrivateExtendedKey.chainCode.size() == 32);
             }THEN("Chain node private key is correct") {
                 REQUIRE(
-                        walletKitUtils::to_hex(rootPrivateExtendedKey->key, rootPrivateExtendedKey->key.size()) ==
+                        walletKitUtils::to_hex(rootPrivateExtendedKey.key, rootPrivateExtendedKey.key.size()) ==
                         "3f61cacd5557d1dfd98a363e0e1af2c91fd83cbd36ec2de9f14f2e2b00b3f09b");
             }THEN("Chain node private chain code is correct") {
-                REQUIRE(walletKitUtils::to_hex(rootPrivateExtendedKey->chainCode,
-                                               rootPrivateExtendedKey->chainCode.size()) ==
+                REQUIRE(walletKitUtils::to_hex(rootPrivateExtendedKey.chainCode,
+                                               rootPrivateExtendedKey.chainCode.size()) ==
                         "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
             }THEN("Chain node public key length is correct") {
-                REQUIRE(rootPublicExtendedKey->key.size() == 33);
+                REQUIRE(rootPublicExtendedKey.key.size() == 33);
             }THEN("Chain node public key is correct") {
-                REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey->key, rootPublicExtendedKey->key.size()) ==
+                REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey.key, rootPublicExtendedKey.key.size()) ==
                         "031012b6a7b8e293198f9c798b8083c3e171cd0bdd42490d4b00995d4335cbe2f9");
             }
         }
 
         WHEN("A chain node private key is serialized to base58") {
-            auto base58EncodedString = rootPrivateExtendedKey->toBase58();
+            auto base58EncodedString = rootPrivateExtendedKey.toBase58();
 
             THEN("The base58 encoded string starts with xprv") {
                 REQUIRE(base58EncodedString.substr(0, 4) == "xprv");
@@ -79,12 +77,13 @@ SCENARIO("main chain node can be created.") {
             }
 
             THEN("The base58 encoded string is correct") {
-                REQUIRE(base58EncodedString == "xprv9s21ZrQH143K3Cr6tYyh5vEeD3SaGsKf3bqytbwfCZzw8QZFGufkaNVbGTg6MzFGkfPzMJa415XX7TUni8i3H84akgjG1i4YYavxQbq1krK");
+                REQUIRE(base58EncodedString ==
+                        "xprv9s21ZrQH143K3Cr6tYyh5vEeD3SaGsKf3bqytbwfCZzw8QZFGufkaNVbGTg6MzFGkfPzMJa415XX7TUni8i3H84akgjG1i4YYavxQbq1krK");
             }
         }
 
         WHEN("A chain node public key is serialized to base58") {
-            auto base58EncodedString = rootPublicExtendedKey->toBase58();
+            auto base58EncodedString = rootPublicExtendedKey.toBase58();
 
             THEN("The base58 encoded string starts with xpub") {
                 REQUIRE(base58EncodedString.substr(0, 4) == "xpub");
@@ -95,16 +94,29 @@ SCENARIO("main chain node can be created.") {
             }
 
             THEN("The base58 encoded string is correct") {
-                REQUIRE(base58EncodedString == "xpub661MyMwAqRbcFgvZzaWhT4BNm5H4gL3WQpmagzMGkuXv1CtPpSz18Ap57kHmYCZKuDNN5hdHzkanQY8DyjsPZAbZeNREkpX5DrZmXwS6QRb");
+                REQUIRE(base58EncodedString ==
+                        "xpub661MyMwAqRbcFgvZzaWhT4BNm5H4gL3WQpmagzMGkuXv1CtPpSz18Ap57kHmYCZKuDNN5hdHzkanQY8DyjsPZAbZeNREkpX5DrZmXwS6QRb");
             }
         }
 
         WHEN("The root private key is used to derive a private key") {
-            auto privateExtendedKey = Bip32::derivePrivateChildKey(*rootPrivateExtendedKey, 0, true);
-//            std::cout << things->toBase58() << std::endl;
-//            auto extendedPublicKey = derivePublicChildKey(privateExtendedKey.get());
+//            auto privateExtendedKey = Bip32::derivePrivateChildKey(rootPrivateExtendedKey, 0, true);
+            auto privateExtendedKey = rootChainNode->derivePrivateChildExtendedKey(true);
+
+            THEN("The private key should be correct") {
+                REQUIRE(walletKitUtils::to_hex(privateExtendedKey->key, 32) ==
+                    "47ec40c7de9fd08fde2937c81b0f58c6de46c367a3e83e2c676d8f58e5254b77");
+            }
+
+            THEN("The chaincode should be correct") {
+                REQUIRE(walletKitUtils::to_hex(privateExtendedKey->chainCode, 32) ==
+                        "8c4c055d7c0cdf1b79678eaad92a83f6fe8049c7eb4ba088e0d8e49484e0abe1");
+            }
+
+            auto privateExtendedKeySerializedValue = privateExtendedKey->toBase58();
             THEN("The base58 encoded string is correct") {
-                REQUIRE(privateExtendedKey->toBase58() == "xprv9uXf9j4vLU4LJ8uDsAWnECLm69qZo6rsGGHM5hrAfHsikZEkG6AQsVji64pdwMUom9bLbmCbb8ARBUdvqYu6GpwVoCmmZ6Jp6FUTskLZFgJ");
+                REQUIRE(privateExtendedKeySerializedValue ==
+                        "xprv9uXf9j4vLU4LJ8uDsAWnECLm69qZo6rsGGHM5hrAfHsikZEkG6AQsVji64pdwMUom9bLbmCbb8ARBUdvqYu6GpwVoCmmZ6Jp6FUTskLZFgJ");
             }
         }
     }

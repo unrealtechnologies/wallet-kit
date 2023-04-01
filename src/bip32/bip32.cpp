@@ -43,7 +43,8 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
             extendedKeyRaw.end()
     );
 
-    auto extendedPublicKey = derivePublicChildKey(*extendedPrivateKey);
+//    auto extendedPublicKey = derivePublicChildKey(*extendedPrivateKey); todo remove this
+    auto extendedPublicKey = extendedPrivateKey->derivePublicChildKey();
 
     std::string path = "m";
     std::unique_ptr<ChainNode> chainNode(
@@ -53,7 +54,6 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
                     std::move(extendedPublicKey)
             )
     );
-
 
     return chainNode;
 }
@@ -100,7 +100,6 @@ std::unique_ptr<ExtendedKey> Bip32::derivePublicChildKey(const ExtendedKey &key)
 }
 
 std::unique_ptr<ExtendedKey> Bip32::derivePrivateChildKey(const ExtendedKey &parentKey, uint32_t index, bool hardened) {
-
 
 //    auto fingerprint = parentKey.fingerPrint()
 

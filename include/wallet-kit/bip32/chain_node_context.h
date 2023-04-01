@@ -6,14 +6,13 @@
 #define WALLET_KIT_LIB_CHAIN_NODE_CONTEXT_H
 
 #include <iostream>
-#include <vector>å
+#include <vector>
 
 struct ChainNodeContext {
     uint8_t depth;
     uint32_t fingerprint;
     uint32_t childNumber;
 //    std::vector<uint8_t> rawFingerPrint;
-
 
     ChainNodeContext(uint8_t depth, uint32_t fingerprint, uint32_t childNumber);
 };

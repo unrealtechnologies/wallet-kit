@@ -47,3 +47,10 @@ ChainKeys would contain both the public and private key info.
 Chain context would contain the version, depth, fingerprint, childNumber, chaincode.
 
 Perhaps we should call a constructor to ChainNode using a private extended key, and then auto generate the 
+
+
+m/0'/0/0
+
+m.get
+
+Path is m -> EPK

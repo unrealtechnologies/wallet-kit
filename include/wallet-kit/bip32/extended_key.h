@@ -24,11 +24,13 @@ struct ExtendedKey {
 
     std::vector<uint8_t> serialize();
 
-    std::vector<uint8_t> serializePublic();
+    std::vector<uint8_t> fingerPrint();
 
     static std::vector<uint8_t> doubleSha256(std::vector<uint8_t> &data);
 
-    static std::vector<uint8_t> fingerPrint(const std::vector<uint8_t>& key);
+    std::unique_ptr<ExtendedKey> derivePublicChildKey();
+
+    std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint);
 };
 
 #endif //WALLET_KIT_LIB_EXTENDED_KEY_H
