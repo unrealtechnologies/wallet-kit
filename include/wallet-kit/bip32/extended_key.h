@@ -24,11 +24,11 @@ struct ExtendedKey {
 
     std::vector<uint8_t> serialize();
 
-    std::vector<uint8_t> fingerPrint();
+    std::vector<uint8_t> fingerPrint() const;
 
     static std::vector<uint8_t> doubleSha256(std::vector<uint8_t> &data);
 
-    std::unique_ptr<ExtendedKey> derivePublicChildKey();
+    std::unique_ptr<ExtendedKey> derivePublicChildKey() const;
 
     std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint);
 };
