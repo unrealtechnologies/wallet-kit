@@ -62,3 +62,11 @@ Using secure key storage mechanisms, such as hardware security modules (HSMs) or
 Limiting the scope of memory access, using techniques such as sandboxing, virtualization, or containerization.
 Implementing access controls, such as user authentication and authorization, to restrict access to the keys only to authorized parties.
 Enforcing good coding practices, such as using secure memory allocation and deallocation techniques, avoiding buffer overflows, and sanitizing inputs.
+
+BIP32
+```text
+        ()
+normal /  \ hard
+     ()    ()
+```
+

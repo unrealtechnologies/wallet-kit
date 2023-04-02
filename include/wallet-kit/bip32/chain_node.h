@@ -17,7 +17,6 @@ struct ChainNode {
     std::unordered_map<std::string, ChainNode> children;
     std::shared_ptr<ChainNodeContext> context;
 
-
     explicit ChainNode(std::string &path, std::unique_ptr<ExtendedKey> privateKey,
                        std::unique_ptr<ExtendedKey> publicKey);
 
