@@ -4,7 +4,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <cstdint>
 #include <wallet-kit/bip39.h>
 #include <wallet-kit/bip32.h>
 #include <utils.h>

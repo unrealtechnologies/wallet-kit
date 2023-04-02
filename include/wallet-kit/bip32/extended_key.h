@@ -20,17 +20,15 @@ struct ExtendedKey {
     std::vector<uint8_t> key;
     std::vector<uint8_t> chainCode;
 
-    std::string toBase58();
+    [[nodiscard]] std::string toBase58();
 
-    std::vector<uint8_t> serialize();
+    [[nodiscard]] std::vector<uint8_t> serialize();
 
-    std::vector<uint8_t> fingerPrint() const;
+    [[nodiscard]] std::vector<uint8_t> fingerPrint() const;
 
-    static std::vector<uint8_t> doubleSha256(std::vector<uint8_t> &data);
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey() const;
 
-    std::unique_ptr<ExtendedKey> derivePublicChildKey() const;
-
-    std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint);
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint);
 };
 
 #endif //WALLET_KIT_LIB_EXTENDED_KEY_H
