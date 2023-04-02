@@ -9,8 +9,11 @@
 #include <unordered_map>
 #include <wallet-kit/bip32/extended_key.h>
 #include <wallet-kit/bip32/chain_node_context.h>
+#include "private_key.h"
+#include "public_key.h"
 
 struct ChainNode {
+    std::tuple<std::unique_ptr<PublicExtendedKey>, std::unique_ptr<PrivateExtendedKey>> keyPair;
     std::unique_ptr<ExtendedKey> privateKey;
     std::unique_ptr<ExtendedKey> publicKey;
     std::unordered_map<std::string, ChainNode> children;

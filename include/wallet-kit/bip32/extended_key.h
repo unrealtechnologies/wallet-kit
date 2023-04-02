@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <botan/secmem.h>
 #include "chain_node_context.h"
 
 enum class KeyType {
