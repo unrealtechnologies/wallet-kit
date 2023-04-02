@@ -63,7 +63,7 @@ std::vector<uint8_t> ExtendedKey::serialize() {
     structure.insert(structure.end(), reinterpret_cast<const uint8_t *>(&this->context->depth),
                      reinterpret_cast<const uint8_t *>(&this->context->depth) + sizeof(this->context->depth));
 
-    std::vector<uint8_t> fingerprintBigEndianOrder = {g
+    std::vector<uint8_t> fingerprintBigEndianOrder = {
             static_cast<unsigned char>((this->context->fingerprint >> 24) & 0xff),
             static_cast<unsigned char>((this->context->fingerprint >> 16) & 0xff),
             static_cast<unsigned char>((this->context->fingerprint >> 8) & 0xff),
