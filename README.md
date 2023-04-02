@@ -54,3 +54,11 @@ m/0'/0/0
 m.get
 
 Path is m -> EPK
+
+
+To minimize the risk of key compromise, most software systems that use private keys implement various security measures, such as:
+
+Using secure key storage mechanisms, such as hardware security modules (HSMs) or encrypted key files.
+Limiting the scope of memory access, using techniques such as sandboxing, virtualization, or containerization.
+Implementing access controls, such as user authentication and authorization, to restrict access to the keys only to authorized parties.
+Enforcing good coding practices, such as using secure memory allocation and deallocation techniques, avoiding buffer overflows, and sanitizing inputs.

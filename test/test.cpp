@@ -100,12 +100,11 @@ SCENARIO("main chain node can be created.") {
         }
 
         WHEN("The root private key is used to derive a private key") {
-//            auto privateExtendedKey = Bip32::derivePrivateChildKey(rootPrivateExtendedKey, 0, true);
             auto privateExtendedKey = rootChainNode->derivePrivateChildExtendedKey(true);
 
             THEN("The private key should be correct") {
                 REQUIRE(walletKitUtils::to_hex(privateExtendedKey->key, 32) ==
-                    "47ec40c7de9fd08fde2937c81b0f58c6de46c367a3e83e2c676d8f58e5254b77");
+                        "47ec40c7de9fd08fde2937c81b0f58c6de46c367a3e83e2c676d8f58e5254b77");
             }
 
             THEN("The chaincode should be correct") {
@@ -119,6 +118,27 @@ SCENARIO("main chain node can be created.") {
                         "xprv9uXf9j4vLU4LJ8uDsAWnECLm69qZo6rsGGHM5hrAfHsikZEkG6AQsVji64pdwMUom9bLbmCbb8ARBUdvqYu6GpwVoCmmZ6Jp6FUTskLZFgJ");
             }
 
+            auto publicExtendedKey = privateExtendedKey->derivePublicChildKey();
+            auto fingerprintVec = publicExtendedKey->fingerPrint();
+            uint32_t fingerprint =
+                    ((uint32_t) fingerprintVec[0] << 24) |
+                    ((uint32_t) fingerprintVec[1] << 16) |
+                    ((uint32_t) fingerprintVec[2] << 8) |
+                    ((uint32_t) fingerprintVec[3]);
+
+
+            auto m00privateExtendedKey = privateExtendedKey->derivePrivateChildKey(0, fingerprint);
+            auto m00publicExtendedKey = m00privateExtendedKey->derivePublicChildKey();
+
+            THEN("A second private child is derived") {
+                REQUIRE(m00privateExtendedKey->toBase58() ==
+                        "xprv9wmpxnmPUVXqYLsiVqW4u7QTcduy36uuMGu5jtoVyBoeUXtZWZM3ig73ogo9SvwDRhUBjZg3UfWK3YZGWRgCfCGHiQF9otWHHKjTGWyUNNJ");
+            }
+
+            THEN("A second public child is derived") {
+                REQUIRE(m00publicExtendedKey->toBase58() ==
+                        "xpub6AmBNJJHJs68kpxBbs35GFMCAfkTSZdkiVpgYHD7XXLdMLDi46fJGURXeztH1V7KB4SBjB6XhfjcvUKJwEBVknHbs7SezJM4myj9WRbaJhv");
+            }
         }
     }
 }
@@ -142,23 +162,4 @@ TEST_CASE("Bip32 extended private key from Bip39 Seed", "[fromSeed]") {
     REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey.chainCode, 32) ==
             "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
 
-//    auto things = Bip32::derivePrivateChildKey(*rootPrivateExtendedKey, 0, true);
-//    std::cout << things->toBase58() << std::endl;
 }
-
-//TEST_CASE( "Bip32 extended private key serializes to base58", "[fromSeed]" ) {
-//    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
-//    auto seed = Bip39::mnemonicToSeed(mnemonic);
-//    auto rootExtendedKey = Bip32::fromSeed(seed);
-//    auto base58EncodedString = rootExtendedKey->toBase58();
-//    REQUIRE( base58EncodedString == "xprv9s21ZrQH143K3Cr6tYyh5vEeD3SaGsKf3bqytbwfCZzw8QZFGufkaNVbGTg6MzFGkfPzMJa415XX7TUni8i3H84akgjG1i4YYavxQbq1krK");
-//}
-//
-//TEST_CASE( "Bip32 extended public key serializes to base58", "[fromSeed]" ) {
-//    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
-//    auto seed = Bip39::mnemonicToSeed(mnemonic);
-//    auto rootExtendedKey = Bip32::fromSeed(seed);
-//    auto rootPublicKey = Bip32::derivePublicChildKey(*rootExtendedKey);
-//    auto base58EncodedString = rootPublicKey->toBase58();
-//    REQUIRE( base58EncodedString == "xpub661MyMwAqRbcFgvZzaWhT4BNm5H4gL3WQpmagzMGkuXv1CtPpSz18Ap57kHmYCZKuDNN5hdHzkanQY8DyjsPZAbZeNREkpX5DrZmXwS6QRb");
-//}

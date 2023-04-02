@@ -24,6 +24,7 @@ struct ChainNode {
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey(bool usingPrivateKey) const;
 
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildExtendedKey(bool withPrivateKey) const;
+
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(bool withPrivateKey) const;
 
 //    void addChildren(const std::string &path, const ChainNode &child);
