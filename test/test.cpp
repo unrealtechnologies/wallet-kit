@@ -42,9 +42,7 @@ SCENARIO("main chain node can be created.") {
         auto rootPublicExtendedKey = *rootChainNode->publicKey;
 
         WHEN("A chain node is created from a bip39 seed") {
-            THEN("Chain node local path is correct") {
-                REQUIRE(rootChainNode->localPath == "m");
-            }THEN("Chain node private key length is correct") {
+            THEN("Chain node private key length is correct") {
                 REQUIRE(rootPrivateExtendedKey.key.size() == 32);
             }THEN("Chain node private chain code length is correct") {
                 REQUIRE(rootPrivateExtendedKey.chainCode.size() == 32);
@@ -149,7 +147,6 @@ TEST_CASE("Bip32 extended private key from Bip39 Seed", "[fromSeed]") {
     ExtendedKey rootPrivateExtendedKey = *rootChainNode->privateKey;
     ExtendedKey rootPublicExtendedKey = *rootChainNode->publicKey;
 
-    REQUIRE(rootChainNode->localPath == "m");
     REQUIRE(
             walletKitUtils::to_hex(rootPrivateExtendedKey.key, 32) ==
             "3f61cacd5557d1dfd98a363e0e1af2c91fd83cbd36ec2de9f14f2e2b00b3f09b");

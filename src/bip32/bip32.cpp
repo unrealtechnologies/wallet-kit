@@ -31,7 +31,6 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
     std::string path = "m";
     std::unique_ptr<ChainNode> chainNode(
             new ChainNode(
-                    path,
                     std::move(extendedPrivateKey),
                     std::move(extendedPublicKey)
             )
