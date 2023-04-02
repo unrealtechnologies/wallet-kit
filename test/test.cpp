@@ -118,6 +118,7 @@ SCENARIO("main chain node can be created.") {
                 REQUIRE(privateExtendedKeySerializedValue ==
                         "xprv9uXf9j4vLU4LJ8uDsAWnECLm69qZo6rsGGHM5hrAfHsikZEkG6AQsVji64pdwMUom9bLbmCbb8ARBUdvqYu6GpwVoCmmZ6Jp6FUTskLZFgJ");
             }
+
         }
     }
 }

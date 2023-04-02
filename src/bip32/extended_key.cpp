@@ -86,7 +86,6 @@ std::vector<uint8_t> ExtendedKey::serialize() {
     }
     structure.insert(structure.end(), this->key.begin(), this->key.end());
     auto str = walletKitUtils::to_hex(structure, 78);
-    std::cout << str << std::endl;
 
     // take the first 4 bytes of the double sha256 of the 78 byte structure above and append it to the structure.
     std::vector<uint8_t> doubleSha256Checksum = ExtendedKey::doubleSha256(structure);
@@ -237,13 +236,6 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, 
     childExtendedKey->key = childKey;
     childExtendedKey->chainCode = childChainCode;
     childExtendedKey->context = privateKeyContext;
-
-//    std::cout << walletKitUtils::to_hex(this->key, 32) << std::endl;
-//    std::cout << walletKitUtils::to_hex(this->chainCode, 32) << std::endl;
-
-    std::cout << walletKitUtils::to_hex(childKey, 32) << std::endl;
-    std::cout << walletKitUtils::to_hex((uint8_t *) &childChainCode, 32) << std::endl;
-
 
     return childExtendedKey;
 }
