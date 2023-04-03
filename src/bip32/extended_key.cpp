@@ -18,7 +18,7 @@ std::string ExtendedKey::toBase58() {
 
 std::vector<uint8_t> ExtendedKey::serialize() {
     std::vector<uint8_t> structure;
-    structure.reserve(78);
+    structure.reserve(82);
 
     const std::vector<uint8_t> privateVersion = {0x04, 0x88, 0xAD, 0xE4};   // 4 bytes version
     const std::vector<uint8_t> publicVersion = {0x04, 0x88, 0xB2, 0x1E};    // 4 bytes version
