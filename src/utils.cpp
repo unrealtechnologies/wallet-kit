@@ -3,10 +3,12 @@
 //
 
 #include <utils.h>
+#include <iomanip>
+#include <sstream>
 
-namespace walletKitUtils {
+namespace WalletKitUtils {
 
-    std::string to_hex(uint8_t * str, size_t len) {
+    std::string toHex(uint8_t * str, size_t len) {
         std::stringstream ss;
         for(int i = 0; i < len; ++i) {
             ss << std::hex << std::setw(2) << std::setfill('0')  <<  (unsigned int)(unsigned char)str[i];
@@ -15,7 +17,7 @@ namespace walletKitUtils {
         return mystr;
     }
 
-    std::string to_hex(std::vector<uint8_t> &vec, const size_t len) {
+    std::string toHex(std::vector<uint8_t> &vec, size_t len) {
         std::stringstream ss;
         for(int i = 0; i < len; ++i) {
             ss << std::hex << std::setw(2) << std::setfill('0')  <<  (unsigned int)(unsigned char)vec[i];
@@ -37,7 +39,7 @@ namespace walletKitUtils {
 
         for (size_t i = 0; i < hexString.length(); i += 2) {
             std::string byteString = hexString.substr(i, 2);
-            uint8_t byte = (uint8_t) strtol(byteString.c_str(), nullptr, 16);
+            auto byte = (uint8_t) strtol(byteString.c_str(), nullptr, 16);
             bytes.push_back(byte);
         }
 
@@ -65,11 +67,11 @@ namespace walletKitUtils {
     }
 
     std::string hexStringToBinary(const std::string &hexString) {
-        std::string binary_string;
+        std::string binaryString;
         for (char const &c: hexString) {
             std::string binary = std::bitset<4>(std::stoi(std::string(1, c), 0, 16)).to_string();
-            binary_string += binary;
+            binaryString += binary;
         }
-        return binary_string;
+        return binaryString;
     }
 }

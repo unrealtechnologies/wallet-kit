@@ -3,17 +3,15 @@
 //
 
 #include <iostream>
-#include <sstream>
 #include <vector>
-#include <iomanip>
 
-namespace walletKitUtils {
+namespace WalletKitUtils {
 
-    std::string to_hex(uint8_t * str, size_t len);
+    std::string toHex(uint8_t *str, size_t len);
 
-    std::string to_hex(std::vector<uint8_t> &vec, size_t len);
+    std::string toHex(std::vector<uint8_t> &vec, size_t len);
 
-    std::string vecToBinaryString(const std::vector<uint8_t>& vec);
+    std::string vecToBinaryString(const std::vector<uint8_t> &vec);
 
     std::vector<uint8_t> hexStringToBytes(const std::string &hexString);
 

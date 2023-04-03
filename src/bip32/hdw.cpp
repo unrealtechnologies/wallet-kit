@@ -7,6 +7,6 @@ HDW::HDW(std::shared_ptr<ExtendedKey> &extendedKey) {
     this->root = *extendedKey;
 }
 
-void HDW::derivePath(std::string path) {
+void HDW::derivePath(const std::string& path) {
 
 }

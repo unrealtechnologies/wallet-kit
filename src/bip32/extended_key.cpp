@@ -32,11 +32,11 @@ std::vector<uint8_t> ExtendedKey::serialize() {
     structure.insert(structure.end(), reinterpret_cast<const uint8_t *>(&this->context->depth),
                      reinterpret_cast<const uint8_t *>(&this->context->depth) + sizeof(this->context->depth));
 
-    std::vector<uint8_t> fingerprintBigEndianOrder = WalletKitCryptoUtils::uint32_to_big_endian(
+    std::vector<uint8_t> fingerprintBigEndianOrder = WalletKitCryptoUtils::uint32ToBigEndian(
             this->context->fingerprint);
     structure.insert(structure.end(), fingerprintBigEndianOrder.begin(), fingerprintBigEndianOrder.end());
 
-    std::vector<uint8_t> childNumberBigEndianOrder = WalletKitCryptoUtils::uint32_to_big_endian(
+    std::vector<uint8_t> childNumberBigEndianOrder = WalletKitCryptoUtils::uint32ToBigEndian(
             this->context->childNumber);
     structure.insert(structure.end(), childNumberBigEndianOrder.begin(), childNumberBigEndianOrder.end());
 
@@ -46,7 +46,7 @@ std::vector<uint8_t> ExtendedKey::serialize() {
         structure.push_back(0x00);
     }
     structure.insert(structure.end(), this->key.begin(), this->key.end());
-    auto str = walletKitUtils::to_hex(structure, 78);
+    auto str = WalletKitUtils::toHex(structure, 78);
 
     // take the first 4 bytes of the double sha256 of the 78 byte structure above and append it to the structure.
     std::vector<uint8_t> doubleSha256Checksum = WalletKitCryptoUtils::doubleSha256(structure);
@@ -104,7 +104,7 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, 
     std::vector<uint8_t> IL(I.begin(), I.begin() + 32);
     std::vector<uint8_t> IR(I.begin() + 32, I.end());
 
-    auto privateKey = WalletKitCryptoUtils::generateprivateKey(this->key, IL);
+    auto privateKey = WalletKitCryptoUtils::generatePrivateKey(this->key, IL);
 
     // Compute child chain code
     const std::vector<uint8_t> &childChainCode = IR;

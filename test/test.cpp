@@ -10,7 +10,7 @@
 
 TEST_CASE("Bip39 mnemonics are derived correctly", "[entropyToMnemonic]") {
     std::string entropyHexStr = "c94c3a10b50450a4eaeee90e45ca90f551ef08266942b4bc4ad821e517e7a24a";
-    std::vector<uint8_t> entropyBytes = walletKitUtils::hexStringToBytes(entropyHexStr);
+    std::vector<uint8_t> entropyBytes = WalletKitUtils::hexStringToBytes(entropyHexStr);
     auto mnemonic = Bip39::entropyToMnemonic(entropyBytes);
     REQUIRE(mnemonic ==
             "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune");
@@ -19,7 +19,7 @@ TEST_CASE("Bip39 mnemonics are derived correctly", "[entropyToMnemonic]") {
 TEST_CASE("Bip39 seed is derived correctly from mnemonic", "[entropyToMnemonic]") {
     std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
     auto seed = Bip39::mnemonicToSeed(mnemonic);
-    auto seedHex = walletKitUtils::to_hex(seed, 64);
+    auto seedHex = WalletKitUtils::toHex(seed, 64);
     REQUIRE(seedHex ==
             "8b3d3c2f07e8eefee19f3426607d4ed156aac2c3362a05746827c85954e60a10ae78b5a04c195ebbd53e2abb34c3d4989fd635c7dd1c151f6a7c16439a6c9dda");
 }
@@ -32,7 +32,7 @@ SCENARIO("main chain node can be created.") {
             THEN("The seed is 64 bytes") {
                 REQUIRE(seed.size() == 64);
             }THEN("The seed is correct") {
-                REQUIRE(walletKitUtils::to_hex(seed, seed.size()) ==
+                REQUIRE(WalletKitUtils::toHex(seed, seed.size()) ==
                         "8b3d3c2f07e8eefee19f3426607d4ed156aac2c3362a05746827c85954e60a10ae78b5a04c195ebbd53e2abb34c3d4989fd635c7dd1c151f6a7c16439a6c9dda");
             }
         }
@@ -48,16 +48,16 @@ SCENARIO("main chain node can be created.") {
                 REQUIRE(rootPrivateExtendedKey.chainCode.size() == 32);
             }THEN("Chain node private key is correct") {
                 REQUIRE(
-                        walletKitUtils::to_hex(rootPrivateExtendedKey.key, rootPrivateExtendedKey.key.size()) ==
+                        WalletKitUtils::toHex(rootPrivateExtendedKey.key, rootPrivateExtendedKey.key.size()) ==
                         "3f61cacd5557d1dfd98a363e0e1af2c91fd83cbd36ec2de9f14f2e2b00b3f09b");
             }THEN("Chain node private chain code is correct") {
-                REQUIRE(walletKitUtils::to_hex(rootPrivateExtendedKey.chainCode,
-                                               rootPrivateExtendedKey.chainCode.size()) ==
+                REQUIRE(WalletKitUtils::toHex(rootPrivateExtendedKey.chainCode,
+                                              rootPrivateExtendedKey.chainCode.size()) ==
                         "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
             }THEN("Chain node public key length is correct") {
                 REQUIRE(rootPublicExtendedKey.key.size() == 33);
             }THEN("Chain node public key is correct") {
-                REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey.key, rootPublicExtendedKey.key.size()) ==
+                REQUIRE(WalletKitUtils::toHex(rootPublicExtendedKey.key, rootPublicExtendedKey.key.size()) ==
                         "031012b6a7b8e293198f9c798b8083c3e171cd0bdd42490d4b00995d4335cbe2f9");
             }
         }
@@ -100,12 +100,12 @@ SCENARIO("main chain node can be created.") {
             auto privateExtendedKey = rootChainNode->derivePrivateChildExtendedKey(true);
 
             THEN("The private key should be correct") {
-                REQUIRE(walletKitUtils::to_hex(privateExtendedKey->key, 32) ==
+                REQUIRE(WalletKitUtils::toHex(privateExtendedKey->key, 32) ==
                         "47ec40c7de9fd08fde2937c81b0f58c6de46c367a3e83e2c676d8f58e5254b77");
             }
 
             THEN("The chaincode should be correct") {
-                REQUIRE(walletKitUtils::to_hex(privateExtendedKey->chainCode, 32) ==
+                REQUIRE(WalletKitUtils::toHex(privateExtendedKey->chainCode, 32) ==
                         "8c4c055d7c0cdf1b79678eaad92a83f6fe8049c7eb4ba088e0d8e49484e0abe1");
             }
 
@@ -148,14 +148,14 @@ TEST_CASE("Bip32 extended private key from Bip39 Seed", "[fromSeed]") {
     ExtendedKey rootPublicExtendedKey = *rootChainNode->publicKey;
 
     REQUIRE(
-            walletKitUtils::to_hex(rootPrivateExtendedKey.key, 32) ==
+            WalletKitUtils::toHex(rootPrivateExtendedKey.key, 32) ==
             "3f61cacd5557d1dfd98a363e0e1af2c91fd83cbd36ec2de9f14f2e2b00b3f09b");
-    REQUIRE(walletKitUtils::to_hex(rootPrivateExtendedKey.chainCode, 32) ==
+    REQUIRE(WalletKitUtils::toHex(rootPrivateExtendedKey.chainCode, 32) ==
             "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
 
-    REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey.key, 33) ==
+    REQUIRE(WalletKitUtils::toHex(rootPublicExtendedKey.key, 33) ==
             "031012b6a7b8e293198f9c798b8083c3e171cd0bdd42490d4b00995d4335cbe2f9");
-    REQUIRE(walletKitUtils::to_hex(rootPublicExtendedKey.chainCode, 32) ==
+    REQUIRE(WalletKitUtils::toHex(rootPublicExtendedKey.chainCode, 32) ==
             "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
 
 }

@@ -14,7 +14,7 @@ uint32_t WalletKitCryptoUtils::htobe32(uint32_t x) {
     union {
         uint32_t val;
         uint8_t bytes[4];
-    } u;
+    } u{};
 
     u.val = x;
 
@@ -26,7 +26,7 @@ uint32_t WalletKitCryptoUtils::htobe32(uint32_t x) {
     return u.val;
 }
 
-std::vector<uint8_t> WalletKitCryptoUtils::uint32_to_big_endian(uint32_t num) {
+std::vector<uint8_t> WalletKitCryptoUtils::uint32ToBigEndian(uint32_t num) {
     std::vector<uint8_t> vec(4);
     uint32_t be_num = htobe32(num); // Convert to big-endian
     std::memcpy(vec.data(), &be_num, sizeof(be_num)); // Copy to vector
@@ -39,7 +39,6 @@ std::vector<uint8_t> WalletKitCryptoUtils::doubleSha256(std::vector<uint8_t> &da
     // commenting this out: std::unique_ptr<Botan::HashFunction> hash256(Botan::HashFunction::create("SHA-256"));
     // in favor of using Botan::SHA_256() directly.
 
-    // compute the first sha256 hash
     auto hash256 = Botan::SHA_256();
     hash256.update(data.data(), data.size());
     auto firstSha256 = hash256.final();
@@ -75,18 +74,18 @@ std::vector<uint8_t> WalletKitCryptoUtils::sha256(const std::vector<uint8_t> &ke
 
 std::vector<uint8_t> WalletKitCryptoUtils::ripemd160(const std::vector<uint8_t> &key) {
     Botan::RIPEMD_160 ripemd160;
-    auto output_data = ripemd160.process(key);
-    std::vector<uint8_t> ripemd160vec(output_data.begin(), output_data.end());
-    return {ripemd160vec.begin(), ripemd160vec.end()};
+    auto outputData = ripemd160.process(key);
+    std::vector<uint8_t> ripemd160Vec(outputData.begin(), outputData.end());
+    return {ripemd160Vec.begin(), ripemd160Vec.end()};
 }
 
 std::vector<uint8_t> WalletKitCryptoUtils::generatePublicKey(const std::vector<uint8_t> &key) {
     auto ctx = CryptoContext::getInstance().getSecp256k1Context();
     secp256k1_pubkey pubkey;
 
-    std::unique_ptr<unsigned char[]> public_key33(new unsigned char[34]);
-    memset(public_key33.get(), 0, 34);
-    size_t pk_len = 34;
+    std::unique_ptr<unsigned char[]> publicKey33(new unsigned char[34]);
+    memset(publicKey33.get(), 0, 34);
+    size_t pkLen = 34;
 
     /* Apparently there is a 2^-128 chance of
      * a secret key being invalid.
@@ -104,16 +103,16 @@ std::vector<uint8_t> WalletKitCryptoUtils::generatePublicKey(const std::vector<u
     }
 
     /* Serialize Public Key */
-    if (!secp256k1_ec_pubkey_serialize(ctx, public_key33.get(), &pk_len, &pubkey,
+    if (!secp256k1_ec_pubkey_serialize(ctx, publicKey33.get(), &pkLen, &pubkey,
                                        SECP256K1_EC_COMPRESSED)) {
         throw std::runtime_error("Failed to serialize public key");
     }
 
-    return {public_key33.get(), public_key33.get() + 33};
+    return {publicKey33.get(), publicKey33.get() + 33};
 }
 
 std::vector<uint8_t>
-WalletKitCryptoUtils::generateprivateKey(const std::vector<uint8_t> &key, const std::vector<uint8_t> &tweak) {
+WalletKitCryptoUtils::generatePrivateKey(const std::vector<uint8_t> &key, const std::vector<uint8_t> &tweak) {
     auto ctx = CryptoContext::getInstance().getSecp256k1Context();
 
     // make a copy to tweak

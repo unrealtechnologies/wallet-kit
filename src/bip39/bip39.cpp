@@ -9,6 +9,7 @@
 #include <botan/pbkdf2.h>
 #include <botan/mac.h>
 #include <botan/types.h>
+#include <sstream>
 
 std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
     if (entropy.size() != 16 && entropy.size() != 32) {
@@ -20,7 +21,7 @@ std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
     std::vector<uint8_t> fullEntropy(entropy.begin(), entropy.end());
     fullEntropy.insert(fullEntropy.end(), checksum.begin(), checksum.end());
 
-    auto fullEntropyBinaryString = walletKitUtils::vecToBinaryString(fullEntropy);
+    auto fullEntropyBinaryString = WalletKitUtils::vecToBinaryString(fullEntropy);
 
     if (fullEntropyBinaryString.length() % 11 != 0) {
         throw std::runtime_error("Error with entropy string + checksum");
@@ -60,7 +61,7 @@ std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
 
 
 std::string Bip39::fullEntropyBitsToMnemonicWords(const std::string &fullEntropyString) {
-    auto wordsBinaryArr = walletKitUtils::split(fullEntropyString, 11);
+    auto wordsBinaryArr = WalletKitUtils::split(fullEntropyString, 11);
 
     std::stringstream seedStringStream;
     for (std::string const &binaryString: wordsBinaryArr) {

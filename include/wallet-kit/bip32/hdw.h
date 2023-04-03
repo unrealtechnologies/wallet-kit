@@ -19,7 +19,7 @@ public:
         return root;
     }
 
-    void derivePath(std::string);
+    void derivePath(const std::string&);
 };
 
 #endif //WALLET_KIT_LIB_HDW_H
