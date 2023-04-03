@@ -26,4 +26,5 @@ struct ExtendedKey {
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint);
 };
 
+
 #endif //WALLET_KIT_LIB_EXTENDED_KEY_H

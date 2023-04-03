@@ -9,21 +9,19 @@
 #include <unordered_map>
 #include <wallet-kit/bip32/extended_key.h>
 #include <wallet-kit/bip32/chain_node_context.h>
-#include "private_key.h"
-#include "public_key.h"
 
 struct ChainNode {
-    std::tuple<std::unique_ptr<PublicExtendedKey>, std::unique_ptr<PrivateExtendedKey>> keyPair;
+//    std::tuple<std::unique_ptr<PublicExtendedKey>, std::unique_ptr<PrivateExtendedKey>> keyPair;
     std::unique_ptr<ExtendedKey> privateKey;
     std::unique_ptr<ExtendedKey> publicKey;
-    std::unordered_map<std::string, ChainNode> children;
+    std::unordered_map<uint32_t, std::tuple<std::unique_ptr<ExtendedKey>, std::unique_ptr<ExtendedKey>>> indexes;
     std::shared_ptr<ChainNodeContext> context;
+    std::unique_ptr<ChainNode> left; // normal keys
+    std::unique_ptr<ChainNode> right; // hardened keys
 
-    explicit ChainNode(std::unique_ptr<ExtendedKey> privateKey,
-                       std::unique_ptr<ExtendedKey> publicKey);
+    explicit ChainNode(std::unique_ptr<ExtendedKey> privateKey, std::unique_ptr<ExtendedKey> publicKey);
 
-    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(bool withPrivateKey) const;
-
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(bool withPrivateKey, uint32_t keyIndex) const;
     //    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey(bool usingPrivateKey) const;
 //    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildExtendedKey(bool withPrivateKey) const;
 //    void addChildren(const std::string &path, const ChainNode &child);

@@ -16,6 +16,7 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
 
     // private key
     std::unique_ptr<ExtendedKey> extendedPrivateKey(new ExtendedKey());
+//    std::unique_ptr<ExtendedKey> extendedPrivateKey(new ExtendedKey());
     extendedPrivateKey->context = context;
     extendedPrivateKey->key = std::vector<uint8_t>(
             extendedKeyRaw.begin(),
@@ -28,13 +29,20 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
 
     auto extendedPublicKey = extendedPrivateKey->derivePublicChildKey();
 
-    std::string path = "m";
     std::unique_ptr<ChainNode> chainNode(
-            new ChainNode(
-                    std::move(extendedPrivateKey),
-                    std::move(extendedPublicKey)
+            new ChainNode(nullptr, nullptr
+//                    std::move(extendedPrivateKey),
+//                    std::move(extendedPublicKey)
             )
     );
+
+    std::tuple<std::unique_ptr<ExtendedKey>, std::unique_ptr<ExtendedKey>> keyTuple(
+            std::move(extendedPrivateKey),
+            std::move(extendedPublicKey)
+    );
+
+
+    chainNode->indexes.insert(std::make_pair(0, std::move(keyTuple)));
 
     return chainNode;
 }
