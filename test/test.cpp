@@ -24,6 +24,11 @@ TEST_CASE("Bip39 seed is derived correctly from mnemonic", "[entropyToMnemonic]"
             "8b3d3c2f07e8eefee19f3426607d4ed156aac2c3362a05746827c85954e60a10ae78b5a04c195ebbd53e2abb34c3d4989fd635c7dd1c151f6a7c16439a6c9dda");
 }
 
+TEST_CASE("Bip32 mnemonics paths are parsed correctly", "[parsePath]") {
+    std::string path = "m/44'/0'/0'/0/0";
+    auto pathArray = Bip32::parsePath(path);
+    REQUIRE(pathArray.size() == 6);}
+
 SCENARIO("main chain node can be created.") {
     GIVEN("A bip39 mnemonic") {
         std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
