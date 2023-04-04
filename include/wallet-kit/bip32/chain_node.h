@@ -21,7 +21,23 @@ struct ChainNode {
 
     explicit ChainNode(std::unique_ptr<ExtendedKey> privateKey, std::unique_ptr<ExtendedKey> publicKey);
 
-    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(bool withPrivateKey, uint32_t keyIndex) const;
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(
+            bool withPrivateKey,
+            uint32_t keyIndex) const;
+
+    [[nodiscard]] std::tuple<ExtendedKey, ExtendedKey> findNode(
+            const std::string &path
+    );
+
+    [[nodiscard]] std::tuple<ExtendedKey, ExtendedKey> search(
+            ChainNode *currentNode,
+            const std::vector<uint32_t>& pathArr
+    );
+
+    [[nodiscard]] std::tuple<ExtendedKey, ExtendedKey> derivePath(const std::string &path);
+
+
+
     //    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey(bool usingPrivateKey) const;
 //    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildExtendedKey(bool withPrivateKey) const;
 //    void addChildren(const std::string &path, const ChainNode &child);

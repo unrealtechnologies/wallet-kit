@@ -25,9 +25,146 @@ TEST_CASE("Bip39 seed is derived correctly from mnemonic", "[entropyToMnemonic]"
 }
 
 TEST_CASE("Bip32 chain paths are parsed correctly", "[parsePath]") {
+
     std::string path = "m/44'/0'/0'/0/0";
     auto pathArray = Bip32::parsePath(path);
-    REQUIRE(pathArray.size() == 6);
+    REQUIRE(pathArray.size() == 5);
+}
+
+TEST_CASE("Chain \"m/0'\" is derived correctly", "[derivePath]") {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootChainNode = Bip32::fromSeed(seed);
+    auto m0KeyTuple = rootChainNode->derivePath("m/0'");
+    auto m0PrivateKey = std::get<0>(m0KeyTuple);
+    auto m0PublicKey = std::get<1>(m0KeyTuple);
+
+    THEN("The private key should be correct") {
+        REQUIRE(WalletKitUtils::toHex(m0PrivateKey.key, 32) ==
+                "47ec40c7de9fd08fde2937c81b0f58c6de46c367a3e83e2c676d8f58e5254b77");
+    }
+
+    THEN("The chaincode should be correct") {
+        REQUIRE(WalletKitUtils::toHex(m0PrivateKey.chainCode, 32) ==
+                "8c4c055d7c0cdf1b79678eaad92a83f6fe8049c7eb4ba088e0d8e49484e0abe1");
+    }
+
+    auto privateExtendedKeySerializedValue = m0PrivateKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(privateExtendedKeySerializedValue ==
+                "xprv9uXf9j4vLU4LJ8uDsAWnECLm69qZo6rsGGHM5hrAfHsikZEkG6AQsVji64pdwMUom9bLbmCbb8ARBUdvqYu6GpwVoCmmZ6Jp6FUTskLZFgJ");
+    }
+
+    auto publicExtendedKeySerializedValue = m0PublicKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(publicExtendedKeySerializedValue ==
+                "xpub68X1ZEbpAqcdWcygyC3nbLHVeBg4CZaidVCwt6FnDdQhdMZtodUfRJ4BwMA529FBJeg45U7mPJBpvLh5wiDJG66UDgVMsmFdEcTEXXmbzMv");
+    }
+}
+
+TEST_CASE("Chain \"m/0\" is derived correctly", "[derivePath]") {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootChainNode = Bip32::fromSeed(seed);
+    auto keyTuple = rootChainNode->derivePath("m/0");
+    auto privateKey = std::get<0>(keyTuple);
+    auto publicKey = std::get<1>(keyTuple);
+
+    auto privateExtendedKeySerializedValue = privateKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(privateExtendedKeySerializedValue ==
+                "xprv9uXf9j4mzoXN6YZPMq2Z1VpvWK1JmqMjrhKaT9LazAusxWZFEeUr5rA2AS4cnKSLf9AvAn37Ymt7o1T6M9hRmpqpYQc5L2tQz2EgbZxxTVo");
+    }
+
+    auto publicExtendedKeySerializedValue = publicKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(publicExtendedKeySerializedValue ==
+                "xpub68X1ZEbfqB5fK2drTrZZNdmf4LqoBJ5bDvFBFXkCYWSrqJtPnBo6deUW1ge2LvoKzHKtUabW4GrAxQqukrTs43tJtXcaUXqoU9tx4JhYGDQ");
+    }
+}
+
+TEST_CASE("Chain \"m/0'/0'\" is derived correctly", "[derivePath]") {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootChainNode = Bip32::fromSeed(seed);
+    auto m00KeyTuple = rootChainNode->derivePath("m/0'/0'");
+    auto m00PrivateKey = std::get<0>(m00KeyTuple);
+    auto m00PublicKey = std::get<1>(m00KeyTuple);
+
+    auto privateExtendedKeySerializedValue = m00PrivateKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(privateExtendedKeySerializedValue ==
+                "xprv9wmpxnmPUVXqYLsiVqW4u7QTcduy36uuMGu5jtoVyBoeUXtZWZM3ig73ogo9SvwDRhUBjZg3UfWK3YZGWRgCfCGHiQF9otWHHKjTGWyUNNJ");
+    }
+
+    auto publicExtendedKeySerializedValue = m00PublicKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(publicExtendedKeySerializedValue ==
+                "xpub6AmBNJJHJs68kpxBbs35GFMCAfkTSZdkiVpgYHD7XXLdMLDi46fJGURXeztH1V7KB4SBjB6XhfjcvUKJwEBVknHbs7SezJM4myj9WRbaJhv");
+    }
+}
+
+TEST_CASE("Chain \"m/0'/0\" is derived correctly", "[derivePath]") {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootChainNode = Bip32::fromSeed(seed);
+    auto keyTuple = rootChainNode->derivePath("m/0'/0");
+    auto privateKey = std::get<0>(keyTuple);
+    auto publicKey = std::get<1>(keyTuple);
+
+    auto privateExtendedKeySerializedValue = privateKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(privateExtendedKeySerializedValue ==
+                "xprv9wmpxnmF8pzsNp3BJ6X2WgWkZ6BHc2EvxieF7uXEvfpsTAVkKxt231axGjDJzc2mVnLpBUwXj2xhuCbjL7WLKqC3Ji98UqyhSiQCGXagDV3");
+    }
+
+    auto publicExtendedKeySerializedValue = publicKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(publicExtendedKeySerializedValue ==
+                "xpub6AmBNJJ8yCZAbJ7eQ842spTV781n1UxnKwZqvHvrV1MrKxptsWCGaouS83j54fZEE28BF3cL1yozcv1wfHKKCGvZLpUTobmVhKCtHPPExAc");
+    }
+}
+
+TEST_CASE("Chain \"m/0'/0'/0'/0'\" is derived correctly", "[derivePath]") {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootChainNode = Bip32::fromSeed(seed);
+    auto keyTuple = rootChainNode->derivePath("m/0'/0'/0'/0'");
+    auto privateKey = std::get<0>(keyTuple);
+    auto publicKey = std::get<1>(keyTuple);
+
+    auto privateExtendedKeySerializedValue = privateKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(privateExtendedKeySerializedValue ==
+                "xprvA229B5HcgdPQjniUnm9tQCBeFN47mHQnrMrXRu5dyzQExwQV7oPLzaymFvYpGjqVtxDsoUVnyuAqLaAbvH9W2iWMZyMvssrxstd3pXhFzQ2");
+    }
+
+    auto publicExtendedKeySerializedValue = publicKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(publicExtendedKeySerializedValue ==
+                "xpub6F1VaapWWzwhxGnwtngtmL8NoPtcAk8eDan8EHVFYKwDqjjdfLhbYPJF7APjYUCqrNW6vJjbAfYdyRhSG65RuTzbqwhWkqDDtVqPMrSw9MD");
+    }
+}
+
+TEST_CASE("Chain \"m/0'/0'/0/0\" is derived correctly", "[derivePath]") {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootChainNode = Bip32::fromSeed(seed);
+    auto keyTuple = rootChainNode->derivePath("m/0'/0'/0'/0'");
+    auto privateKey = std::get<0>(keyTuple);
+    auto publicKey = std::get<1>(keyTuple);
+
+    auto privateExtendedKeySerializedValue = privateKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(privateExtendedKeySerializedValue ==
+                "xprvA14dVQHTcwWJWDTMjixYDMymuc2YNCYzDFd9s6mdNNAYZBtt92XhLtnhJXtkWbA4MCFBa7Adq9wHpneCRKWeFmqSYpEhwk2deacgqpdd4po");
+    }
+
+    auto publicExtendedKeySerializedValue = publicKey.toBase58();
+    THEN("The base58 encoded string is correct") {
+        REQUIRE(publicExtendedKeySerializedValue ==
+                "xpub6E3ytupMTK4bihXpqkVYaVvWTds2mfGqaUYkfVBEvhhXRzE2gZqwth7B9oneTow5gZbA8SaY5X55QDXzhL3nTa9JVv99JP1jBg2VZhaF1nn");
+    }
 }
 
 SCENARIO("main chain node can be created.") {
@@ -44,6 +181,7 @@ SCENARIO("main chain node can be created.") {
         }
 
         auto rootChainNode = Bip32::fromSeed(seed);
+        auto node = rootChainNode->findNode("m/0'");
         auto t = rootChainNode->indexes.find(0x80000000);
         ExtendedKey rootPrivateExtendedKey = *std::get<0>(t->second);
         ExtendedKey rootPublicExtendedKey = *std::get<1>(t->second);
@@ -104,11 +242,51 @@ SCENARIO("main chain node can be created.") {
         }
 
         WHEN("The root private key is used to derive a private key") {
+            auto m0KeyTuple = rootChainNode->derivePath("m/0'");
+            auto m0PrivateKey = std::get<0>(m0KeyTuple);
+            auto m0PublicKey = std::get<1>(m0KeyTuple);
 
-            auto privateExtendedKey = rootChainNode->derivePrivateChildExtendedKey(
-                    true,
-                    0x80000000
-            );
+            THEN("The private key should be correct") {
+                REQUIRE(WalletKitUtils::toHex(m0PrivateKey.key, 32) ==
+                        "47ec40c7de9fd08fde2937c81b0f58c6de46c367a3e83e2c676d8f58e5254b77");
+            }
+
+            THEN("The chaincode should be correct") {
+                REQUIRE(WalletKitUtils::toHex(m0PrivateKey.chainCode, 32) ==
+                        "8c4c055d7c0cdf1b79678eaad92a83f6fe8049c7eb4ba088e0d8e49484e0abe1");
+            }
+
+            auto privateExtendedKeySerializedValue = m0PrivateKey.toBase58();
+            THEN("The base58 encoded string is correct") {
+                REQUIRE(privateExtendedKeySerializedValue ==
+                        "xprv9uXf9j4vLU4LJ8uDsAWnECLm69qZo6rsGGHM5hrAfHsikZEkG6AQsVji64pdwMUom9bLbmCbb8ARBUdvqYu6GpwVoCmmZ6Jp6FUTskLZFgJ");
+            }
+
+            auto publicExtendedKeySerializedValue = m0PublicKey.toBase58();
+            THEN("The base58 encoded string is correct") {
+                REQUIRE(publicExtendedKeySerializedValue ==
+                        "xpub68X1ZEbpAqcdWcygyC3nbLHVeBg4CZaidVCwt6FnDdQhdMZtodUfRJ4BwMA529FBJeg45U7mPJBpvLh5wiDJG66UDgVMsmFdEcTEXXmbzMv");
+            }
+
+//            auto m0000KeyTuple = rootChainNode->derivePath("m/0'/0'/0'/0'");
+//            auto m0000PrivateKey = std::get<0>(m0000KeyTuple);
+//            auto m0000PublicKey = std::get<1>(m0000KeyTuple);
+//
+//            std::cout << WalletKitUtils::toHex(m0000PrivateKey.key, 32) << std::endl;
+//            std::cout << WalletKitUtils::toHex(m0000PrivateKey.chainCode, 32) << std::endl;
+//            std::cout << WalletKitUtils::toHex(m0000PublicKey.key, 33) << std::endl;
+//            std::cout << WalletKitUtils::toHex(m0000PublicKey.chainCode, 32) << std::endl;
+//            std::cout << m0000PrivateKey.toBase58() << std::endl;
+//            std::cout << m0000PublicKey.toBase58() << std::endl;
+
+//            THEN("The priva
+
+//            THEN("The private key should be corre
+
+//            auto privateExtendedKey = rootChainNode->derivePrivateChildExtendedKey(
+//                    true,
+//                    0x80000000
+//            );
 //            auto privateExtendedKey = rootChainNode->indexes.find(0)->second;
 //            ExtendedKey privateExtendedKey = *std::get<0>(rootChainNode->indexes.find(0)->second);
 //            auto p = privateExtendedKey.derivePrivateChildKey(true);
@@ -173,5 +351,28 @@ TEST_CASE("Bip32 extended private key from Bip39 Seed", "[fromSeed]") {
             "031012b6a7b8e293198f9c798b8083c3e171cd0bdd42490d4b00995d4335cbe2f9");
     REQUIRE(WalletKitUtils::toHex(rootPublicExtendedKey.chainCode, 32) ==
             "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
+
+}
+
+TEST_CASE("After generating a rootChainNode derive a child key", "[fromSeed]") {
+    std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
+    auto seed = Bip39::mnemonicToSeed(mnemonic);
+    auto rootChainNode = Bip32::fromSeed(seed);
+
+    rootChainNode.get()->derivePath("m/0'");
+//    auto t = rootChainNode->indexes.find(0x80000000);
+//    ExtendedKey rootPrivateExtendedKey = *std::get<0>(t->second);
+//    ExtendedKey rootPublicExtendedKey = *std::get<1>(t->second);
+
+//    REQUIRE(
+//            WalletKitUtils::toHex(rootPrivateExtendedKey.key, 32) ==
+//            "3f61cacd5557d1dfd98a363e0e1af2c91fd83cbd36ec2de9f14f2e2b00b3f09b");
+//    REQUIRE(WalletKitUtils::toHex(rootPrivateExtendedKey.chainCode, 32) ==
+//            "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
+//
+//    REQUIRE(WalletKitUtils::toHex(rootPublicExtendedKey.key, 33) ==
+//            "031012b6a7b8e293198f9c798b8083c3e171cd0bdd42490d4b00995d4335cbe2f9");
+//    REQUIRE(WalletKitUtils::toHex(rootPublicExtendedKey.chainCode, 32) ==
+//            "7325025b59e91b0e0b774a2ea39dd059042682f2199557cb05af9752611f1a34");
 
 }

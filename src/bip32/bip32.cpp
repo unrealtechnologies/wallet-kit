@@ -71,7 +71,7 @@ std::vector<uint32_t> Bip32::parsePath(std::string &strPath) {
 
     for (auto &path: pathVector) {
         if (path == "m") {
-            arrPath.push_back(0x80000000);
+//            arrPath.push_back(0x80000000);
             continue;
         }
 

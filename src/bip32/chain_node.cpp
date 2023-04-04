@@ -3,6 +3,8 @@
 //
 #include <utility>
 #include <wallet-kit/bip32/chain_node.h>
+#include "wallet-kit/bip32.h"
+#include <utils.h>
 
 ChainNode::ChainNode(
         std::unique_ptr<ExtendedKey> privateKey,
@@ -25,5 +27,83 @@ std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(bool withP
     }
 
     return std::unique_ptr<ExtendedKey>();
+}
+
+std::tuple<ExtendedKey, ExtendedKey> ChainNode::findNode(const std::string &path) {
+    if (path.empty()) {
+        throw std::runtime_error("Path is empty");
+    }
+
+    if (path == "m") {
+        auto prvKey = *std::get<0>(this->indexes.find(0x80000000)->second);
+        auto pubKey = *std::get<1>(this->indexes.find(0x80000000)->second);
+        return std::make_tuple(prvKey, pubKey);
+    }
+
+    auto pathArr = Bip32::parsePath(const_cast<std::string &>(path));
+
+    if (pathArr.empty()) {
+        throw std::runtime_error("Path arr is empty");
+    }
+
+    return this->search(this, pathArr);
+
+//    if (pathArr.size() > 1) {
+//        auto keyIndex = pathArr[0];
+//        if (keyIndex >= 0x80000000) {
+//
+//        }
+//    }
+}
+
+std::tuple<ExtendedKey, ExtendedKey> ChainNode::search(ChainNode *currentNode, const std::vector<uint32_t> &pathArr) {
+    auto keyIndex = pathArr[0];
+    if (pathArr.size() > 1) {
+
+        if (keyIndex >= 0x80000000) {
+            std::vector<uint32_t> subArr(pathArr.begin() + 1, pathArr.end());
+            return this->search(currentNode->right.get(), subArr);
+        }
+    } else {
+        auto prvKey = *std::get<0>(currentNode->indexes.find(keyIndex)->second);
+        auto pubKey = *std::get<1>(currentNode->indexes.find(keyIndex)->second);
+        return std::make_tuple(prvKey, pubKey);
+    }
+    return {};
+}
+
+std::tuple<ExtendedKey, ExtendedKey> ChainNode::derivePath(const std::string &path) {
+    auto pathArr = Bip32::parsePath(const_cast<std::string &>(path));
+    auto currentNode = this;
+    uint32_t lastIndex = 0x80000000;
+    for (auto index: pathArr) {
+        auto prvKey = currentNode->derivePrivateChildExtendedKey(true, lastIndex);
+        auto pubKey = prvKey->derivePublicChildKey();
+
+        if (index >= 0x80000000) {
+            currentNode->right = std::make_unique<ChainNode>(nullptr, nullptr);
+            currentNode->right->indexes.insert(
+                    std::make_pair(
+                            index,
+                            std::make_tuple(std::move(prvKey), std::move(pubKey))
+                    )
+            );
+            currentNode = currentNode->right.get();
+        } else {
+            currentNode->left = std::make_unique<ChainNode>(nullptr, nullptr);
+            currentNode->left->indexes.insert(
+                    std::make_pair(
+                            index,
+                            std::make_tuple(std::move(prvKey), std::move(pubKey))
+                    )
+            );
+            currentNode = currentNode->left.get();
+        }
+
+        lastIndex = index;
+    }
+    auto prvKey1 = *std::get<0>(currentNode->indexes.find(pathArr[pathArr.size() - 1])->second);
+    auto pubKey1 = *std::get<1>(currentNode->indexes.find(pathArr[pathArr.size() - 1])->second);
+    return std::make_tuple(prvKey1, pubKey1);
 };
 
