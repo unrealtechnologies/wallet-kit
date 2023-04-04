@@ -41,26 +41,25 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
             std::move(extendedPublicKey)
     );
 
-
-    chainNode->indexes.insert(std::make_pair(0, std::move(keyTuple)));
+    chainNode->indexes.insert(std::make_pair(0x80000000, std::move(keyTuple)));
 
     return chainNode;
 }
 
 
 // for string delimiter todo: move this to a utils file
-std::vector<std::string> split(const std::string& s, const std::string& delimiter) {
+std::vector<std::string> split(const std::string &s, const std::string &delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
 
     while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
-        token = s.substr (pos_start, pos_end - pos_start);
+        token = s.substr(pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
-        res.push_back (token);
+        res.push_back(token);
     }
 
-    res.push_back (s.substr (pos_start));
+    res.push_back(s.substr(pos_start));
     return res;
 }
 
@@ -70,9 +69,9 @@ std::vector<uint32_t> Bip32::parsePath(std::string &strPath) {
     auto pathVector = split(strPath, delimiter);
     std::vector<uint32_t> arrPath;
 
-    for (auto &path : pathVector) {
+    for (auto &path: pathVector) {
         if (path == "m") {
-            arrPath.push_back(0);
+            arrPath.push_back(0x80000000);
             continue;
         }
 

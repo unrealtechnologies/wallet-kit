@@ -24,10 +24,11 @@ TEST_CASE("Bip39 seed is derived correctly from mnemonic", "[entropyToMnemonic]"
             "8b3d3c2f07e8eefee19f3426607d4ed156aac2c3362a05746827c85954e60a10ae78b5a04c195ebbd53e2abb34c3d4989fd635c7dd1c151f6a7c16439a6c9dda");
 }
 
-TEST_CASE("Bip32 mnemonics paths are parsed correctly", "[parsePath]") {
+TEST_CASE("Bip32 chain paths are parsed correctly", "[parsePath]") {
     std::string path = "m/44'/0'/0'/0/0";
     auto pathArray = Bip32::parsePath(path);
-    REQUIRE(pathArray.size() == 6);}
+    REQUIRE(pathArray.size() == 6);
+}
 
 SCENARIO("main chain node can be created.") {
     GIVEN("A bip39 mnemonic") {
@@ -43,7 +44,7 @@ SCENARIO("main chain node can be created.") {
         }
 
         auto rootChainNode = Bip32::fromSeed(seed);
-        auto t = rootChainNode->indexes.find(0);
+        auto t = rootChainNode->indexes.find(0x80000000);
         ExtendedKey rootPrivateExtendedKey = *std::get<0>(t->second);
         ExtendedKey rootPublicExtendedKey = *std::get<1>(t->second);
 
@@ -104,7 +105,10 @@ SCENARIO("main chain node can be created.") {
 
         WHEN("The root private key is used to derive a private key") {
 
-            auto privateExtendedKey = rootChainNode->derivePrivateChildExtendedKey(true, 0);
+            auto privateExtendedKey = rootChainNode->derivePrivateChildExtendedKey(
+                    true,
+                    0x80000000
+            );
 //            auto privateExtendedKey = rootChainNode->indexes.find(0)->second;
 //            ExtendedKey privateExtendedKey = *std::get<0>(rootChainNode->indexes.find(0)->second);
 //            auto p = privateExtendedKey.derivePrivateChildKey(true);
@@ -155,7 +159,7 @@ TEST_CASE("Bip32 extended private key from Bip39 Seed", "[fromSeed]") {
     std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
     auto seed = Bip39::mnemonicToSeed(mnemonic);
     auto rootChainNode = Bip32::fromSeed(seed);
-    auto t = rootChainNode->indexes.find(0);
+    auto t = rootChainNode->indexes.find(0x80000000);
     ExtendedKey rootPrivateExtendedKey = *std::get<0>(t->second);
     ExtendedKey rootPublicExtendedKey = *std::get<1>(t->second);
 
