@@ -23,7 +23,7 @@ struct ExtendedKey {
 
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey() const;
 
-    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint);
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint, bool hardened);
 };
 
 
