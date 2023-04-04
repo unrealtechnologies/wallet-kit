@@ -150,7 +150,7 @@ TEST_CASE("Chain \"m/0'/0'/0/0\" is derived correctly", "[derivePath]") {
     std::string mnemonic = "sing gift loud head eagle fame produce tag atom comic picnic turkey bus lottery often choose regret time render duck fabric video matrix fortune";
     auto seed = Bip39::mnemonicToSeed(mnemonic);
     auto rootChainNode = Bip32::fromSeed(seed);
-    auto keyTuple = rootChainNode->derivePath("m/0'/0'/0'/0'");
+    auto keyTuple = rootChainNode->derivePath("m/0'/0'/0/0");
     auto privateKey = std::get<0>(keyTuple);
     auto publicKey = std::get<1>(keyTuple);
 
