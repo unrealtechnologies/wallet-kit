@@ -41,7 +41,7 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
             std::move(extendedPublicKey)
     );
 
-    chainNode->indexes.insert(std::make_pair(0x80000000, std::move(keyTuple)));
+    chainNode->indexes.insert(std::make_pair(0, std::move(keyTuple)));
 
     return chainNode;
 }
@@ -71,7 +71,6 @@ std::vector<uint32_t> Bip32::parsePath(std::string &strPath) {
 
     for (auto &path: pathVector) {
         if (path == "m") {
-//            arrPath.push_back(0x80000000);
             continue;
         }
 
