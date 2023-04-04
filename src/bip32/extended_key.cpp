@@ -73,11 +73,10 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePublicChildKey() const {
     return publicExtendedKey;
 }
 
-std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, uint32_t fingerprint) {
+std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, uint32_t fingerprint, bool hardened) {
     // Determine whether the child key is hardened or not
     uint32_t childIndex = index;
 
-    bool hardened = true;
     if (hardened) {
         childIndex |= 0x80000000;
     }
@@ -90,8 +89,13 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, 
 
     // Compute HMAC-SHA512 of parent key and child index
     std::vector<uint8_t> data(37);
-    data[0] = 0x00;
-    std::copy(this->key.begin(), this->key.end(), data.begin() + 1);
+    if (hardened) {
+        data[0] = 0x00;
+        std::copy(this->key.begin(), this->key.end(), data.begin() + 1);
+    } else {
+        auto publicKey = WalletKitCryptoUtils::generatePublicKey(this->key);
+        std::copy(publicKey.begin(), publicKey.end(), data.begin());
+    }
     data[33] = (childIndex >> 24) & 0xff;
     data[34] = (childIndex >> 16) & 0xff;
     data[35] = (childIndex >> 8) & 0xff;

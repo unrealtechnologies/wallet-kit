@@ -23,7 +23,9 @@ struct ChainNode {
 
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(
             bool withPrivateKey,
-            uint32_t keyIndex) const;
+            uint32_t keyIndex,
+            bool hardened
+    ) const;
 
     [[nodiscard]] std::tuple<ExtendedKey, ExtendedKey> findNode(
             const std::string &path
@@ -31,7 +33,7 @@ struct ChainNode {
 
     [[nodiscard]] std::tuple<ExtendedKey, ExtendedKey> search(
             ChainNode *currentNode,
-            const std::vector<uint32_t>& pathArr
+            const std::vector<uint32_t> &pathArr
     );
 
     [[nodiscard]] std::tuple<ExtendedKey, ExtendedKey> derivePath(const std::string &path);

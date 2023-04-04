@@ -13,7 +13,7 @@ ChainNode::ChainNode(
         publicKey(std::move(publicKey)) {
 }
 
-std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(bool withPrivateKey, uint32_t keyIndex) const {
+std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(bool withPrivateKey, uint32_t keyIndex, bool hardened) const {
     if (withPrivateKey) {
         auto fingerprintVec = std::get<1>(this->indexes.find(keyIndex)->second)->fingerPrint();
         uint32_t fingerprint =
@@ -23,7 +23,7 @@ std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(bool withP
                 ((uint8_t) fingerprintVec[3]);
 
         auto pKey = *std::get<0>(this->indexes.find(keyIndex)->second);
-        return pKey.derivePrivateChildKey(0, fingerprint);
+        return pKey.derivePrivateChildKey(0, fingerprint, hardened);
     }
 
     return std::unique_ptr<ExtendedKey>();
@@ -77,10 +77,9 @@ std::tuple<ExtendedKey, ExtendedKey> ChainNode::derivePath(const std::string &pa
     auto currentNode = this;
     uint32_t lastIndex = 0x80000000;
     for (auto index: pathArr) {
-        auto prvKey = currentNode->derivePrivateChildExtendedKey(true, lastIndex);
-        auto pubKey = prvKey->derivePublicChildKey();
-
         if (index >= 0x80000000) {
+            auto prvKey = currentNode->derivePrivateChildExtendedKey(true, lastIndex, true);
+            auto pubKey = prvKey->derivePublicChildKey();
             currentNode->right = std::make_unique<ChainNode>(nullptr, nullptr);
             currentNode->right->indexes.insert(
                     std::make_pair(
@@ -90,6 +89,8 @@ std::tuple<ExtendedKey, ExtendedKey> ChainNode::derivePath(const std::string &pa
             );
             currentNode = currentNode->right.get();
         } else {
+            auto prvKey = currentNode->derivePrivateChildExtendedKey(true, lastIndex, false);
+            auto pubKey = prvKey->derivePublicChildKey();
             currentNode->left = std::make_unique<ChainNode>(nullptr, nullptr);
             currentNode->left->indexes.insert(
                     std::make_pair(
