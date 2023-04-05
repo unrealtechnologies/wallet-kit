@@ -17,11 +17,11 @@ std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
     }
 
     auto checksum = getEntropyChecksum(entropy);
+    auto checksumBinary = WalletKitUtils::vecToBinaryString(checksum);
+    auto checksumLength = entropy.size() * 8 / 32;
 
-    std::vector<uint8_t> fullEntropy(entropy.begin(), entropy.end());
-    fullEntropy.insert(fullEntropy.end(), checksum.begin(), checksum.end());
-
-    auto fullEntropyBinaryString = WalletKitUtils::vecToBinaryString(fullEntropy);
+    auto fullEntropyBinaryString = WalletKitUtils::vecToBinaryString(entropy);
+    fullEntropyBinaryString += checksumBinary.substr(0, checksumLength);
 
     if (fullEntropyBinaryString.length() % 11 != 0) {
         throw std::runtime_error("Error with entropy string + checksum");
