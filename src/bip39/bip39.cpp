@@ -12,8 +12,8 @@
 #include <sstream>
 
 std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
-    if (entropy.size() != 16 && entropy.size() != 32) {
-        throw std::runtime_error("Key size should be 128 or 256 bits");
+    if (entropy.size() <= 16 && entropy.size() >= 32 && entropy.size() % 4 != 0) {
+        throw std::runtime_error("Key size should be between 128 and 256 bits");
     }
 
     auto checksum = getEntropyChecksum(entropy);
