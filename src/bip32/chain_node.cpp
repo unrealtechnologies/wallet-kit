@@ -70,39 +70,36 @@ std::tuple<ExtendedKey, ExtendedKey> ChainNode::search(ChainNode *currentNode, c
     return {};
 }
 
+void ChainNode::insertIndexIntoNode(
+        ChainNode *node,
+        uint32_t index,
+        std::unique_ptr<ExtendedKey> prvKey,
+        std::unique_ptr<ExtendedKey> pubKey) {
+    node->indexes.insert(
+            std::make_pair(
+                    index,
+                    std::make_tuple(std::move(prvKey), std::move(pubKey))
+            )
+    );
+}
+
 std::tuple<ExtendedKey, ExtendedKey> ChainNode::derivePath(const std::string &path) {
     auto pathArr = Bip32::parsePath(const_cast<std::string &>(path));
     auto currentNode = this;
     uint32_t lastIndex = 0x80000000;
     for (auto index: pathArr) {
-        if (index >= 0x80000000) {
-            auto prvKey = currentNode->derivePrivateChildExtendedKey(lastIndex, index, true);
-            auto pubKey = prvKey->derivePublicChildKey();
-            currentNode->right = std::make_unique<ChainNode>(nullptr, nullptr);
-            currentNode->right->indexes.insert(
-                    std::make_pair(
-                            index,
-                            std::make_tuple(std::move(prvKey), std::move(pubKey))
-                    )
-            );
-            currentNode = currentNode->right.get();
-        } else {
-            auto prvKey = currentNode->derivePrivateChildExtendedKey(lastIndex, index, false);
-            auto pubKey = prvKey->derivePublicChildKey();
-            currentNode->left = std::make_unique<ChainNode>(nullptr, nullptr);
-            currentNode->left->indexes.insert(
-                    std::make_pair(
-                            index,
-                            std::make_tuple(std::move(prvKey), std::move(pubKey))
-                    )
-            );
-            currentNode = currentNode->left.get();
-        }
+        auto isHardened = index >= 0x80000000;
+        auto prvKey = currentNode->derivePrivateChildExtendedKey(lastIndex, index, isHardened);
+        auto pubKey = prvKey->derivePublicChildKey();
+        auto &childNode = (index >= 0x80000000) ? currentNode->right : currentNode->left;
 
+        childNode = std::make_unique<ChainNode>(nullptr, nullptr);
+        insertIndexIntoNode(childNode.get(), index, std::move(prvKey), std::move(pubKey));
+        currentNode = childNode.get();
         lastIndex = index;
     }
-    auto prvKey1 = *std::get<0>(currentNode->indexes.find(pathArr[pathArr.size() - 1])->second);
-    auto pubKey1 = *std::get<1>(currentNode->indexes.find(pathArr[pathArr.size() - 1])->second);
-    return std::make_tuple(prvKey1, pubKey1);
+
+    auto &[prvKey1, pubKey1] = currentNode->indexes.find(pathArr[pathArr.size() - 1])->second;
+    return std::make_tuple(*prvKey1.get(), *pubKey1.get());
 };
 

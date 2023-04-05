@@ -11,7 +11,6 @@
 #include <wallet-kit/bip32/chain_node_context.h>
 
 struct ChainNode {
-//    std::tuple<std::unique_ptr<PublicExtendedKey>, std::unique_ptr<PrivateExtendedKey>> keyPair;
     std::unique_ptr<ExtendedKey> privateKey;
     std::unique_ptr<ExtendedKey> publicKey;
     std::unordered_map<uint32_t, std::tuple<std::unique_ptr<ExtendedKey>, std::unique_ptr<ExtendedKey>>> indexes;
@@ -38,11 +37,8 @@ struct ChainNode {
 
     [[nodiscard]] std::tuple<ExtendedKey, ExtendedKey> derivePath(const std::string &path);
 
-
-
-    //    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey(bool usingPrivateKey) const;
-//    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildExtendedKey(bool withPrivateKey) const;
-//    void addChildren(const std::string &path, const ChainNode &child);
+private:
+    static void insertIndexIntoNode(ChainNode* node, uint32_t index, std::unique_ptr<ExtendedKey> prvKey, std::unique_ptr<ExtendedKey> pubKey);
 };
 
 #endif //WALLET_KIT_LIB_CHAIN_NODE_H
