@@ -69,7 +69,7 @@ namespace WalletKitUtils {
     std::string hexStringToBinary(const std::string &hexString) {
         std::string binaryString;
         for (char const &c: hexString) {
-            std::string binary = std::bitset<4>(std::stoi(std::string(1, c), 0, 16)).to_string();
+            std::string binary = std::bitset<4>(std::stoi(std::string(1, c), nullptr, 16)).to_string();
             binaryString += binary;
         }
         return binaryString;
