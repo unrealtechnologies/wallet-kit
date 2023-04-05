@@ -38,7 +38,7 @@ std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
     const size_t iterations = 2048;
 
     // Define the output length of the key (in bytes)
-    const size_t output_length = 64;
+    const size_t outputLength = 64;
 
     // Define the PRF to use (in this case, HMAC-SHA-512)
     std::unique_ptr<Botan::MessageAuthenticationCode> prf(Botan::MessageAuthenticationCode::create("HMAC(SHA-512)"));
@@ -46,16 +46,16 @@ std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
     prf->set_key(password);
 
     // make the output buffer twice the length of the output.
-    uint8_t out[output_length * 2];
+    uint8_t out[outputLength * 2];
 
     const auto *saltUint8 = reinterpret_cast<const uint8_t *>(salt.c_str());
     Botan::pbkdf2(*prf,
-                  out, output_length,
+                  out, outputLength,
                   saltUint8, salt.length(),
                   iterations
     );
 
-    std::vector<uint8_t> seed(out, out + output_length);
+    std::vector<uint8_t> seed(out, out + outputLength);
     return seed;
 }
 
