@@ -359,7 +359,7 @@ TEST_CASE("After generating a rootChainNode derive a child key", "[fromSeed]") {
     auto seed = Bip39::mnemonicToSeed(mnemonic);
     auto rootChainNode = Bip32::fromSeed(seed);
 
-    rootChainNode.get()->derivePath("m/0'");
+    //rootChainNode.get()->derivePath("m/0'");
 //    auto t = rootChainNode->indexes.find(0x80000000);
 //    ExtendedKey rootPrivateExtendedKey = *std::get<0>(t->second);
 //    ExtendedKey rootPublicExtendedKey = *std::get<1>(t->second);

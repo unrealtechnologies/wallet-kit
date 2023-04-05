@@ -11,14 +11,12 @@
 #include <wallet-kit/bip32/chain_node_context.h>
 
 struct ChainNode {
-    std::unique_ptr<ExtendedKey> privateKey;
-    std::unique_ptr<ExtendedKey> publicKey;
     std::unordered_map<uint32_t, std::tuple<std::unique_ptr<ExtendedKey>, std::unique_ptr<ExtendedKey>>> indexes;
     std::shared_ptr<ChainNodeContext> context;
     std::unique_ptr<ChainNode> left; // normal keys
     std::unique_ptr<ChainNode> right; // hardened keys
 
-    explicit ChainNode(std::unique_ptr<ExtendedKey> privateKey, std::unique_ptr<ExtendedKey> publicKey);
+    explicit ChainNode();
 
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(
             uint32_t parentKeyIndex,

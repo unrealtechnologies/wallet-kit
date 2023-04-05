@@ -30,10 +30,7 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
     auto extendedPublicKey = extendedPrivateKey->derivePublicChildKey();
 
     std::unique_ptr<ChainNode> chainNode(
-            new ChainNode(nullptr, nullptr
-//                    std::move(extendedPrivateKey),
-//                    std::move(extendedPublicKey)
-            )
+            new ChainNode()
     );
 
     std::tuple<std::unique_ptr<ExtendedKey>, std::unique_ptr<ExtendedKey>> keyTuple(

@@ -6,12 +6,7 @@
 #include "wallet-kit/bip32.h"
 #include <utils.h>
 
-ChainNode::ChainNode(
-        std::unique_ptr<ExtendedKey> privateKey,
-        std::unique_ptr<ExtendedKey> publicKey) :
-        privateKey(std::move(privateKey)),
-        publicKey(std::move(publicKey)) {
-}
+ChainNode::ChainNode() = default;
 
 std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(
         uint32_t parentKeyIndex,
@@ -94,7 +89,7 @@ std::tuple<ExtendedKey, ExtendedKey> ChainNode::derivePath(const std::string &pa
         auto pubKey = prvKey->derivePublicChildKey();
         auto &childNode = (index >= 0x80000000) ? currentNode->right : currentNode->left;
 
-        childNode = std::make_unique<ChainNode>(nullptr, nullptr);
+        childNode = std::make_unique<ChainNode>();
         insertIndexIntoNode(childNode.get(), index, std::move(prvKey), std::move(pubKey));
         currentNode = childNode.get();
         lastIndex = index;
