@@ -96,7 +96,7 @@ target_link_libraries(wallet_kit_lib
 # Define tests target
 add_executable(wallet_kit_tests
         test/test.cpp
-        test/bip_32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp)
+        test/bip32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp)
 
 target_include_directories(wallet_kit_tests PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
