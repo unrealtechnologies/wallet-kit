@@ -13,20 +13,20 @@ ChainNode::ChainNode(
         publicKey(std::move(publicKey)) {
 }
 
-std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(bool withPrivateKey, uint32_t keyIndex, bool hardened) const {
-    if (withPrivateKey) {
-        auto fingerprintVec = std::get<1>(this->indexes.find(keyIndex)->second)->fingerPrint();
-        uint32_t fingerprint =
-                ((uint8_t) fingerprintVec[0] << 24) |
-                ((uint8_t) fingerprintVec[1] << 16) |
-                ((uint8_t) fingerprintVec[2] << 8) |
-                ((uint8_t) fingerprintVec[3]);
+std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(
+        uint32_t parentKeyIndex,
+        uint32_t childKeyIndex,
+        bool hardened
+) const {
+    auto fingerprintVec = std::get<1>(this->indexes.find(parentKeyIndex)->second)->fingerPrint();
+    uint32_t fingerprint =
+            ((uint8_t) fingerprintVec[0] << 24) |
+            ((uint8_t) fingerprintVec[1] << 16) |
+            ((uint8_t) fingerprintVec[2] << 8) |
+            ((uint8_t) fingerprintVec[3]);
 
-        auto pKey = *std::get<0>(this->indexes.find(keyIndex)->second);
-        return pKey.derivePrivateChildKey(0, fingerprint, hardened);
-    }
-
-    return std::unique_ptr<ExtendedKey>();
+    auto pKey = *std::get<0>(this->indexes.find(parentKeyIndex)->second);
+    return pKey.derivePrivateChildKey(childKeyIndex, fingerprint, hardened);
 }
 
 std::tuple<ExtendedKey, ExtendedKey> ChainNode::findNode(const std::string &path) {
@@ -47,13 +47,6 @@ std::tuple<ExtendedKey, ExtendedKey> ChainNode::findNode(const std::string &path
     }
 
     return this->search(this, pathArr);
-
-//    if (pathArr.size() > 1) {
-//        auto keyIndex = pathArr[0];
-//        if (keyIndex >= 0x80000000) {
-//
-//        }
-//    }
 }
 
 std::tuple<ExtendedKey, ExtendedKey> ChainNode::search(ChainNode *currentNode, const std::vector<uint32_t> &pathArr) {
@@ -78,7 +71,7 @@ std::tuple<ExtendedKey, ExtendedKey> ChainNode::derivePath(const std::string &pa
     uint32_t lastIndex = 0x80000000;
     for (auto index: pathArr) {
         if (index >= 0x80000000) {
-            auto prvKey = currentNode->derivePrivateChildExtendedKey(true, lastIndex, true);
+            auto prvKey = currentNode->derivePrivateChildExtendedKey(lastIndex, index, true);
             auto pubKey = prvKey->derivePublicChildKey();
             currentNode->right = std::make_unique<ChainNode>(nullptr, nullptr);
             currentNode->right->indexes.insert(
@@ -89,7 +82,7 @@ std::tuple<ExtendedKey, ExtendedKey> ChainNode::derivePath(const std::string &pa
             );
             currentNode = currentNode->right.get();
         } else {
-            auto prvKey = currentNode->derivePrivateChildExtendedKey(true, lastIndex, false);
+            auto prvKey = currentNode->derivePrivateChildExtendedKey(lastIndex, index, false);
             auto pubKey = prvKey->derivePublicChildKey();
             currentNode->left = std::make_unique<ChainNode>(nullptr, nullptr);
             currentNode->left->indexes.insert(

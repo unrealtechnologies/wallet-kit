@@ -22,8 +22,8 @@ struct ChainNode {
     explicit ChainNode(std::unique_ptr<ExtendedKey> privateKey, std::unique_ptr<ExtendedKey> publicKey);
 
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildExtendedKey(
-            bool withPrivateKey,
-            uint32_t keyIndex,
+            uint32_t parentKeyIndex,
+            uint32_t childKeyIndex,
             bool hardened
     ) const;
 
