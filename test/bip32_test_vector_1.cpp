@@ -95,19 +95,6 @@ SCENARIO("We test the BIP32 test vector 1", "[bip32testvec1]") {
                         publicKey.toBase58() ==
                         "xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy");
             }
-
-//            THEN("We should get the expected result for chain m/0H/1H") {
-//                auto keyTuple = rootChainNode->derivePath("m/0'/1'");
-//                auto privateKey = std::get<0>(keyTuple);
-//                auto publicKey = std::get<1>(keyTuple);
-//                REQUIRE(
-//                        privateKey.toBase58() ==
-//                        "xprv9xJocDuwtYCMNAo3Zw76WENQeAS6WGXQ55RCy7tDJ8oALr4FWkuVoHJeHVAcAqiZLE7Je3vZJHxspZdFHfnBEjHqU5hG1Jaj32dVoS6XLT1");
-//
-//                REQUIRE(
-//                        publicKey.toBase58() ==
-//                        "xpub6BJA1jSqiukeaesWfxe6sNK9CCGaujFFSJLomWHprUL9DePQ4JDkM5d88n49sMGJxrhpjazuXYWdMf17C9T5XnxkopaeS7jGk1GyyVziaMt");
-//            }
         }
     }
 }

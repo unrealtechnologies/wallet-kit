@@ -7,7 +7,7 @@
 #include "wallet-kit/bip39.h"
 #include "wallet-kit/bip32.h"
 
-SCENARIO("We test the BIP32 test vector 4", "[test1]") {
+SCENARIO("We test the BIP32 test vector 4", "[bip32testvec4]") {
     GIVEN("We have a BIP32 test vector 4") {
         WHEN("We run the test with seed (hex): 3ddd5602285899a946114506157c7997e5444528f3003f6134712147db19b678") {
             std::string seedHexStr = "3ddd5602285899a946114506157c7997e5444528f3003f6134712147db19b678";
