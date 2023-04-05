@@ -122,6 +122,10 @@ WalletKitCryptoUtils::generatePrivateKey(const std::vector<uint8_t> &key, const 
         throw std::runtime_error("Failed to derive child private key");
     }
 
+    if (!secp256k1_ec_seckey_verify(ctx, privateKey.data())) {
+        throw std::runtime_error("Generated private key is invalid");
+    }
+
     return privateKey;
 }
 

@@ -81,12 +81,6 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, 
         childIndex |= 0x80000000;
     }
 
-    /*
-     * Check whether i ≥ 231 (whether the child is a hardened key).
-     * If so (hardened child): let I = HMAC-SHA512(Key = cpar, Data = 0x00 || ser256(kpar) || ser32(i)).
-     * (Note: The 0x00 pads the private key to make it 33 bytes long.)
-     */
-
     // Compute HMAC-SHA512 of parent key and child index
     std::vector<uint8_t> data(37);
     if (hardened) {

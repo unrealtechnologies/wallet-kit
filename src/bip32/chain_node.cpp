@@ -74,7 +74,8 @@ void ChainNode::insertIndexIntoNode(
         ChainNode *node,
         uint32_t index,
         std::unique_ptr<ExtendedKey> prvKey,
-        std::unique_ptr<ExtendedKey> pubKey) {
+        std::unique_ptr<ExtendedKey> pubKey
+) {
     node->indexes.insert(
             std::make_pair(
                     index,
