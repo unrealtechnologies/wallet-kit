@@ -1,11 +1,9 @@
 //
 // Created by Ariel Saldana on 4/4/23.
 //
-
 #include <catch2/catch_test_macros.hpp>
 #include "utils.h"
 #include "wallet-kit/bip39.h"
-#include "wallet-kit/bip32.h"
 
 SCENARIO("We test the BIP39 test vector", "[bip39testvec]") {
     GIVEN("We have a BIP39 test vector") {
