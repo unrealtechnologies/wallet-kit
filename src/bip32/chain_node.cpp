@@ -26,6 +26,11 @@ std::unique_ptr<ExtendedKey> ChainNode::derivePrivateChildExtendedKey(
             ((uint8_t) fingerprintVec[3]);
 
     auto pKey = *std::get<0>(this->indexes.find(parentKeyIndex)->second);
+
+    if (pKey.key.size() > 32) {
+        throw std::runtime_error("private key length is greater than 32, are you trying to use a public key?");
+    }
+
     return pKey.derivePrivateChildKey(childKeyIndex, fingerprint, hardened);
 }
 
