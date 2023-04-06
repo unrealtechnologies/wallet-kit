@@ -36,9 +36,11 @@ SCENARIO("With Bip44 Paths we can derive keys", "[generatePath&DeriveKeys]") {
         WHEN("We derive a key from bip44 path: m/44'/60'/0'/0/0 (account 0)") {
 
             Bip44 bip44(CoinType::ETH, 0, 0);
-            std::cout << bip44.generatePath(0) << std::endl;
-            auto keyTuple = rootChainNode->derivePath(bip44.generatePath(0));
 
+            const auto path = bip44.generatePath(0);
+            REQUIRE(path == "m/44'/60'/0'/0/0");
+
+            auto keyTuple = rootChainNode->derivePath(path);
             THEN("We should get the expected result") {
                 auto privateKey = std::get<0>(keyTuple);
                 auto publicKey = std::get<1>(keyTuple);

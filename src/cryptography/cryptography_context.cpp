@@ -5,7 +5,7 @@
 #include <wallet-kit/cryptography/cryptography_context.h>
 
 CryptoContext &CryptoContext::getInstance() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex);
     static CryptoContext instance;
     return instance;
 }
@@ -18,4 +18,4 @@ secp256k1_context *CryptoContext::getSecp256k1Context() {
     return ctx;
 }
 
-std::mutex CryptoContext::mutex_;
+std::mutex CryptoContext::mutex;

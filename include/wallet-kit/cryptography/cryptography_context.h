@@ -17,7 +17,7 @@ public:
 
 private:
     secp256k1_context *ctx;
-    static std::mutex mutex_;
+    static std::mutex mutex;
 
     CryptoContext();
 

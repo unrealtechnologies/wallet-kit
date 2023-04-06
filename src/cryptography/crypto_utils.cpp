@@ -10,9 +10,7 @@
 #include <secp256k1.h>
 #include <botan/base58.h>
 #include <botan/keccak.h>
-#include <iostream>
 #include "utils.h"
-#include <botan/sha3.h>
 
 uint32_t WalletKitCryptoUtils::htobe32(uint32_t x) {
     union {
