@@ -20,4 +20,6 @@ namespace WalletKitUtils {
     std::string charArrayToBinary(uint8_t *input, size_t inputSize, size_t finalStringLength);
 
     std::string hexStringToBinary(const std::string &hexString);
+
+    std::vector<std::string> split(const std::string &s, const std::string &delimiter);
 }

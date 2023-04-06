@@ -8,10 +8,10 @@
 
 namespace WalletKitUtils {
 
-    std::string toHex(uint8_t * str, size_t len) {
+    std::string toHex(uint8_t *str, size_t len) {
         std::stringstream ss;
-        for(int i = 0; i < len; ++i) {
-            ss << std::hex << std::setw(2) << std::setfill('0')  <<  (unsigned int)(unsigned char)str[i];
+        for (int i = 0; i < len; ++i) {
+            ss << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) (unsigned char) str[i];
         }
         std::string mystr = ss.str();
         return mystr;
@@ -19,20 +19,21 @@ namespace WalletKitUtils {
 
     std::string toHex(std::vector<uint8_t> &vec, size_t len) {
         std::stringstream ss;
-        for(int i = 0; i < len; ++i) {
-            ss << std::hex << std::setw(2) << std::setfill('0')  <<  (unsigned int)(unsigned char)vec[i];
+        for (int i = 0; i < len; ++i) {
+            ss << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) (unsigned char) vec[i];
         }
         std::string mystr = ss.str();
         return mystr;
     }
 
-    std::string vecToBinaryString(const std::vector<uint8_t>& vec) {
+    std::string vecToBinaryString(const std::vector<uint8_t> &vec) {
         std::ostringstream oss;
-        for (const auto& byte : vec) {
+        for (const auto &byte: vec) {
             oss << std::bitset<8>(byte);
         }
         return oss.str();
     }
+
 //
     std::vector<uint8_t> hexStringToBytes(const std::string &hexString) {
         std::vector<uint8_t> bytes;
@@ -73,5 +74,20 @@ namespace WalletKitUtils {
             binaryString += binary;
         }
         return binaryString;
+    }
+
+    std::vector<std::string> split(const std::string &s, const std::string &delimiter) {
+        size_t posStart = 0, posEnd, delimLen = delimiter.length();
+        std::string token;
+        std::vector<std::string> res;
+
+        while ((posEnd = s.find(delimiter, posStart)) != std::string::npos) {
+            token = s.substr(posStart, posEnd - posStart);
+            posStart = posEnd + delimLen;
+            res.push_back(token);
+        }
+
+        res.push_back(s.substr(posStart));
+        return res;
     }
 }

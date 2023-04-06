@@ -4,6 +4,7 @@
 
 #include <wallet-kit/bip32.h>
 #include <wallet-kit/cryptography/crypto_utils.h>
+#include "utils.h"
 
 std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
     std::string keyString = "Bitcoin seed";
@@ -43,32 +44,14 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
     return chainNode;
 }
 
-
-// for string delimiter todo: move this to a utils file
-std::vector<std::string> split(const std::string &s, const std::string &delimiter) {
-    size_t posStart = 0, posEnd, delimLen = delimiter.length();
-    std::string token;
-    std::vector<std::string> res;
-
-    while ((posEnd = s.find(delimiter, posStart)) != std::string::npos) {
-        token = s.substr(posStart, posEnd - posStart);
-        posStart = posEnd + delimLen;
-        res.push_back(token);
-    }
-
-    res.push_back(s.substr(posStart));
-    return res;
-}
-
 // takes a path like /44'/0'/0'/0/0 and returns a vector of uint32_t
 std::vector<uint32_t> Bip32::parsePath(std::string &strPath) {
     auto delimiter = "/";
-    auto pathVector = split(strPath, delimiter);
+    auto pathVector = WalletKitUtils::split(strPath, delimiter);
     std::vector<uint32_t> arrPath;
 
     for (auto &path: pathVector) {
         if (path == "m") {
-//            arrPath.push_back(0x80000000);
             continue;
         }
 
@@ -80,7 +63,6 @@ std::vector<uint32_t> Bip32::parsePath(std::string &strPath) {
             arrPath.push_back(std::stol(path));
         }
     }
-
 
     return arrPath;
 }
