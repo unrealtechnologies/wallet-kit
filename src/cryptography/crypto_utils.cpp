@@ -9,6 +9,10 @@
 #include <botan/rmd160.h>
 #include <secp256k1.h>
 #include <botan/base58.h>
+#include <botan/keccak.h>
+#include <iostream>
+#include "utils.h"
+#include <botan/sha3.h>
 
 uint32_t WalletKitCryptoUtils::htobe32(uint32_t x) {
     union {
@@ -79,13 +83,14 @@ std::vector<uint8_t> WalletKitCryptoUtils::ripemd160(const std::vector<uint8_t> 
     return {ripemd160Vec.begin(), ripemd160Vec.end()};
 }
 
-std::vector<uint8_t> WalletKitCryptoUtils::generatePublicKey(const std::vector<uint8_t> &key) {
+std::vector<uint8_t> WalletKitCryptoUtils::generatePublicKey(const std::vector<uint8_t> &key, bool compressed) {
     auto ctx = CryptoContext::getInstance().getSecp256k1Context();
     secp256k1_pubkey pubkey;
+    auto len = (compressed) ? 33U : 65U;
 
-    std::unique_ptr<unsigned char[]> publicKey33(new unsigned char[34]);
-    memset(publicKey33.get(), 0, 34);
-    size_t pkLen = 34;
+    std::unique_ptr<unsigned char[]> publicKey33(new unsigned char[len + 1]);
+    memset(publicKey33.get(), 0, len + 1);
+    size_t pkLen = len + 1;
 
     /* Apparently there is a 2^-128 chance of
      * a secret key being invalid.
@@ -102,13 +107,15 @@ std::vector<uint8_t> WalletKitCryptoUtils::generatePublicKey(const std::vector<u
         throw std::runtime_error("Failed to create public key");
     }
 
+    auto serializationMethod = compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED;
+
     /* Serialize Public Key */
     if (!secp256k1_ec_pubkey_serialize(ctx, publicKey33.get(), &pkLen, &pubkey,
-                                       SECP256K1_EC_COMPRESSED)) {
+                                       serializationMethod)) {
         throw std::runtime_error("Failed to serialize public key");
     }
 
-    return {publicKey33.get(), publicKey33.get() + 33};
+    return {publicKey33.get(), publicKey33.get() + len};
 }
 
 std::vector<uint8_t>
@@ -131,4 +138,20 @@ WalletKitCryptoUtils::generatePrivateKey(const std::vector<uint8_t> &key, const 
 
 std::string WalletKitCryptoUtils::base58Encode(std::vector<uint8_t> &data) {
     return Botan::base58_encode(data);
+}
+
+Botan::secure_vector<uint8_t> WalletKitCryptoUtils::keccak256(std::vector<uint8_t> &data) {
+    auto keccak256 = Botan::Keccak_1600(256);
+    keccak256.update(data);
+    auto digest = keccak256.final();
+    auto hexStr = std::vector<uint8_t>(digest.begin(), digest.end());
+    return digest;
+}
+
+Botan::secure_vector<uint8_t> WalletKitCryptoUtils::keccak256(const std::string &data) {
+    auto keccak256 = Botan::Keccak_1600(256);
+    keccak256.update(data);
+    auto digest = keccak256.final();
+    auto hexStr = std::vector<uint8_t>(digest.begin(), digest.end());
+    return digest;
 }

@@ -6,6 +6,8 @@
 #define WALLET_KIT_LIB_CRYPTO_UTILS_H
 
 #include <vector>
+#include <botan/base58.h>
+
 
 namespace WalletKitCryptoUtils {
     uint32_t htobe32(uint32_t x);
@@ -20,11 +22,15 @@ namespace WalletKitCryptoUtils {
 
     std::vector<uint8_t> ripemd160(const std::vector<uint8_t> &key);
 
-    std::vector<uint8_t> generatePublicKey(const std::vector<uint8_t> &key);
+    std::vector<uint8_t> generatePublicKey(const std::vector<uint8_t> &key, bool compressed = true);
 
     std::vector<uint8_t> generatePrivateKey(const std::vector<uint8_t> &key, const std::vector<uint8_t> &tweak);
 
     std::string base58Encode(std::vector<uint8_t> &data);
+
+    Botan::secure_vector<uint8_t> keccak256(std::vector<uint8_t> &data);
+
+    Botan::secure_vector<uint8_t> keccak256(const std::string &data);
 }
 
 #endif //WALLET_KIT_LIB_CRYPTO_UTILS_H

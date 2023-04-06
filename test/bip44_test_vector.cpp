@@ -8,6 +8,8 @@
 #include <wallet-kit/bip44/coin_type.h>
 #include <wallet-kit/bip39.h>
 #include <wallet-kit/bip32.h>
+#include <iomanip>
+#include <algorithm>
 
 TEST_CASE("Bip44 paths are generated correctly", "[generatePath]") {
     GIVEN("We have a Bip44 object") {
@@ -34,12 +36,18 @@ SCENARIO("With Bip44 Paths we can derive keys", "[generatePath&DeriveKeys]") {
         WHEN("We derive a key from bip44 path: m/44'/60'/0'/0/0 (account 0)") {
 
             Bip44 bip44(CoinType::ETH, 0, 0);
-            std::cout << bip44.generatePath(0) <<std::endl;
+            std::cout << bip44.generatePath(0) << std::endl;
             auto keyTuple = rootChainNode->derivePath(bip44.generatePath(0));
 
             THEN("We should get the expected result") {
                 auto privateKey = std::get<0>(keyTuple);
                 auto publicKey = std::get<1>(keyTuple);
+
+                REQUIRE(
+                        WalletKitUtils::toHex(publicKey.key, publicKey.key.size()) ==
+                        "03bd0d889494ea14416805fc2ac543a284569e1191099f941e513720df9e9e39c8"
+                );
+
                 REQUIRE(
                         privateKey.toBase58() ==
                         "xprvA4AaGn74pfzyKs2Mq2Pb2ttyYyxyrDconFS9Dznj9NcxBYBc1i4FDMN5Tr4BWMzNDtYBMyMU2ZMYMdsQQ2K9m2CDyaLknp3sQsnTWwbKVDZ");
@@ -47,6 +55,12 @@ SCENARIO("With Bip44 Paths we can derive keys", "[generatePath&DeriveKeys]") {
                 REQUIRE(
                         publicKey.toBase58() ==
                         "xpub6H9vgHdxf3ZGYM6pw3vbQ2qi71oUFgLf9UMk2PCLhi9w4LWkZFNVm9gZK9msi9U1AiX4yfJUoerdVdwnUUW4RcSjjkBhPSp3ggKE9FHDsUc");
+
+
+                auto addressIndex0 = privateKey.deriveAddress();
+                REQUIRE(
+                        addressIndex0 ==
+                        "0x9e748224507f4b015CEE74EFa0DF4651AAe297e3");
             }
         }
     }

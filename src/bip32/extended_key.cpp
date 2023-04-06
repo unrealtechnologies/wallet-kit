@@ -6,6 +6,8 @@
 #include <utils.h>
 #include "wallet-kit/bip32/extended_key.h"
 #include <wallet-kit/cryptography/crypto_utils.h>
+#include <iomanip>
+#include <sstream>
 
 std::string ExtendedKey::toBase58() {
     if (this->context == nullptr) {
@@ -62,8 +64,8 @@ std::vector<uint8_t> ExtendedKey::fingerPrint() const {
     return {output_data.begin(), output_data.end()};
 }
 
-std::unique_ptr<ExtendedKey> ExtendedKey::derivePublicChildKey() const {
-    auto publicKey = WalletKitCryptoUtils::generatePublicKey(this->key);
+std::unique_ptr<ExtendedKey> ExtendedKey::derivePublicChildKey(bool compressed) const {
+    auto publicKey = WalletKitCryptoUtils::generatePublicKey(this->key, compressed);
 
     std::unique_ptr<ExtendedKey> publicExtendedKey(new ExtendedKey());
     publicExtendedKey->key = publicKey;
@@ -121,4 +123,48 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, 
 
     return childExtendedKey;
 }
+
+std::unique_ptr<ExtendedKey> ExtendedKey::derivePublicChildKeyUncompressed() const {
+    return this->derivePublicChildKey(false);
+}
+
+std::string ethereumAddressChecksum(const std::string& address) {
+    // Convert the address to lowercase hexadecimal
+    std::string lowercaseAddress = address.substr(2);
+    std::transform(lowercaseAddress.begin(), lowercaseAddress.end(), lowercaseAddress.begin(), ::tolower);
+
+    // Hash the lowercase address with Keccak-256
+    auto hash = WalletKitCryptoUtils::keccak256(lowercaseAddress);
+
+    // Create the checksum address by replacing each character in the original address
+    // with either uppercase or lowercase depending on the corresponding character in the hash
+    std::string checksumAddress = "0x";
+    for (int i = 0; i < lowercaseAddress.length(); i++) {
+        if (((hash[i/2] >> ((1 - i % 2) * 4)) & 0x0f) >= 8) {
+            checksumAddress += toupper(lowercaseAddress[i]);
+        } else {
+            checksumAddress += lowercaseAddress[i];
+        }
+    }
+
+    return checksumAddress;
+}
+
+std::string ExtendedKey::deriveAddress() const {
+    auto uncompressedPublicKey = *this->derivePublicChildKeyUncompressed();
+    std::vector<uint8_t> publicKeyWithoutPrefix(uncompressedPublicKey.key.begin() +1, uncompressedPublicKey.key.end());
+    auto keccakDigestSecureVector = WalletKitCryptoUtils::keccak256(publicKeyWithoutPrefix);
+    std::vector<uint8_t> keccakDigestUnSecureVector = std::vector<uint8_t>(keccakDigestSecureVector.begin(), keccakDigestSecureVector.end());
+
+    // Extract last 20 bytes of hash as Ethereum address
+    std::vector<uint8_t> addressBytes(keccakDigestUnSecureVector.end() - 20, keccakDigestUnSecureVector.end());
+    std::ostringstream oss;
+    oss << "0x" << std::hex << std::setfill('0');
+    for (auto byte : addressBytes) {
+        oss << std::setw(2) << static_cast<int>(byte);
+    }
+    std::string ethereumAddress = oss.str();
+    return ethereumAddressChecksum(ethereumAddress);
+}
+
 

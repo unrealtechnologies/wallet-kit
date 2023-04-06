@@ -21,9 +21,13 @@ struct ExtendedKey {
 
     [[nodiscard]] std::vector<uint8_t> fingerPrint() const;
 
-    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey() const;
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey(bool compressed = true) const;
 
     [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint, bool hardened);
+
+    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKeyUncompressed() const;
+
+    [[nodiscard]] std::string deriveAddress() const;
 };
 
 
