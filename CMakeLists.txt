@@ -81,7 +81,7 @@ add_library(wallet_kit_lib SHARED
         src/bip32/bip32.cpp
         src/bip39/bip39.cpp
         src/bip32/extended_key.cpp
-        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp)
+        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp include/wallet-kit/bip44/bip44.h include/wallet-kit/bip44/coin_type.h src/bip44/bip44.cpp)
 
 target_include_directories(wallet_kit_lib
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -96,7 +96,7 @@ target_link_libraries(wallet_kit_lib
 # Define tests target
 add_executable(wallet_kit_tests
         test/test.cpp
-        test/bip32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp test/bip39_test_vector.cpp)
+        test/bip32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp test/bip39_test_vector.cpp test/bip44_test_vector.cpp)
 
 target_include_directories(wallet_kit_tests PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
