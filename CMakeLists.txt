@@ -36,6 +36,8 @@ FetchContent_Declare(
 FetchContent_GetProperties(botan)
 string(TOLOWER "botan" lcName)
 if (NOT ${lcName}_POPULATED)
+    set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/botan)
+    #    find_package(Botan REQUIRED)
     # This downloads botan, but nothing beyond that
     # Ideally we would also use a CONGIFURE step to avoid the extra
     # ExternalProject, but that is explicitly not supported
@@ -64,6 +66,7 @@ if (NOT ${lcName}_POPULATED)
     add_library(Botan::botan STATIC IMPORTED GLOBAL)
     add_dependencies(Botan::botan botan_project)
 
+
     # Workaround for INTERFACE_INCLUDE_DIRECTORIES. The problem is the include
     # directory needs to exist at cmake configuration time even though it won't
     # exist until the external project is checked out at build time.
@@ -73,7 +76,9 @@ if (NOT ${lcName}_POPULATED)
             IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/botan/lib/libbotan-2.a
             INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}/botan/include/botan-2
             )
+
 endif ()
+
 
 # Define library target
 add_library(wallet_kit_lib SHARED
