@@ -11,6 +11,7 @@
 #include <botan/base58.h>
 #include <botan/keccak.h>
 #include "utils.h"
+#include <botan/system_rng.h>
 
 uint32_t WalletKitCryptoUtils::htobe32(uint32_t x) {
     union {
@@ -152,4 +153,15 @@ Botan::secure_vector<uint8_t> WalletKitCryptoUtils::keccak256(const std::string 
     auto digest = keccak256.final();
     auto hexStr = std::vector<uint8_t>(digest.begin(), digest.end());
     return digest;
+}
+
+std::vector<uint8_t> WalletKitCryptoUtils::generateEntropy(uint32_t length) {
+    // Create an instance of the Botan system RNG
+    Botan::System_RNG rng;
+
+    // Generate a random 32-bit integer
+//    uint32_t randInt = rng.next_byte();
+    std::vector<uint8_t> randBytes(length);
+    rng.randomize(randBytes.data(), randBytes.size());
+    return randBytes;
 }

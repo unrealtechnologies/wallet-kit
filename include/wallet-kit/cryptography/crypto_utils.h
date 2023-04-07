@@ -31,6 +31,8 @@ namespace WalletKitCryptoUtils {
     Botan::secure_vector<uint8_t> keccak256(std::vector<uint8_t> &data);
 
     Botan::secure_vector<uint8_t> keccak256(const std::string &data);
+
+    std::vector<uint8_t> generateEntropy(uint32_t length);
 }
 
 #endif //WALLET_KIT_LIB_CRYPTO_UTILS_H
