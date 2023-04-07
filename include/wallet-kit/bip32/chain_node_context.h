@@ -5,7 +5,7 @@
 #ifndef WALLET_KIT_LIB_CHAIN_NODE_CONTEXT_H
 #define WALLET_KIT_LIB_CHAIN_NODE_CONTEXT_H
 
-#include <vector>
+#include <cstdint>
 
 struct ChainNodeContext {
     uint8_t depth;

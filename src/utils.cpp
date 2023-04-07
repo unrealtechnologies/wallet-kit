@@ -5,6 +5,7 @@
 #include <utils.h>
 #include <iomanip>
 #include <sstream>
+#include <bitset>
 
 namespace WalletKitUtils {
 
