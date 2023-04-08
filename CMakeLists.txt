@@ -109,5 +109,5 @@ target_include_directories(wallet_kit_tests PUBLIC
 
 target_link_libraries(wallet_kit_tests
         PRIVATE Catch2::Catch2WithMain
-        wallet_kit_lib
+        PRIVATE wallet_kit_lib
         )
