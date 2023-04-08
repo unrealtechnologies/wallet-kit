@@ -20,6 +20,7 @@ std::string ExtendedKey::toBase58() {
 
 std::vector<uint8_t> ExtendedKey::serialize() {
     std::vector<uint8_t> structure;
+    const int serializedKeyWithoutChecksumLength = 72;
     const int serializedKeyWithChecksumLength = 82;
     structure.reserve(serializedKeyWithChecksumLength);
 
@@ -32,15 +33,26 @@ std::vector<uint8_t> ExtendedKey::serialize() {
         structure.insert(structure.end(), publicVersion.begin(), publicVersion.end());
     }
 
-    structure.insert(structure.end(), reinterpret_cast<const uint8_t *>(&this->context->depth),
-                     reinterpret_cast<const uint8_t *>(&this->context->depth) + sizeof(this->context->depth));
+    structure.insert(
+            structure.end(),
+            reinterpret_cast<const uint8_t *>(&this->context->depth),
+            reinterpret_cast<const uint8_t *>(&this->context->depth) + sizeof(this->context->depth)
+    );
 
     std::vector<uint8_t> fingerprintBigEndianOrder = WalletKitCryptoUtils::uint32ToBigEndian(
-            this->context->fingerprint);
-    structure.insert(structure.end(), fingerprintBigEndianOrder.begin(), fingerprintBigEndianOrder.end());
+            this->context->fingerprint
+    );
+
+    structure.insert(
+            structure.end(),
+            fingerprintBigEndianOrder.begin(),
+            fingerprintBigEndianOrder.end()
+    );
 
     std::vector<uint8_t> childNumberBigEndianOrder = WalletKitCryptoUtils::uint32ToBigEndian(
-            this->context->childNumber);
+            this->context->childNumber
+    );
+
     structure.insert(structure.end(), childNumberBigEndianOrder.begin(), childNumberBigEndianOrder.end());
 
     structure.insert(structure.end(), this->chainCode.begin(), this->chainCode.end());
@@ -48,10 +60,12 @@ std::vector<uint8_t> ExtendedKey::serialize() {
     if (this->key.size() == 32) {
         structure.push_back(0x00);
     }
+
     structure.insert(structure.end(), this->key.begin(), this->key.end());
-    auto str = WalletKitUtils::toHex(structure, 78);
+
 
     // take the first 4 bytes of the double sha256 of the 78 byte structure above and append it to the structure.
+    auto str = WalletKitUtils::toHex(structure, serializedKeyWithoutChecksumLength);
     std::vector<uint8_t> doubleSha256Checksum = WalletKitCryptoUtils::doubleSha256(structure);
     structure.insert(structure.end(), doubleSha256Checksum.begin(), doubleSha256Checksum.begin() + 4);
 
