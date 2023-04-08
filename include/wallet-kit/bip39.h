@@ -14,6 +14,8 @@ private:
     static std::vector<uint8_t> getEntropyChecksum(std::vector<uint8_t> &);
 
 public:
+    static const int numberOfBitsPerWord = 11;
+
     static std::string entropyToMnemonic(std::vector<uint8_t> &entropy);
 
     static std::vector<uint8_t> mnemonicToSeed(std::string);

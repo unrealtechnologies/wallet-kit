@@ -23,7 +23,7 @@ std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
     auto fullEntropyBinaryString = WalletKitUtils::vecToBinaryString(entropy);
     fullEntropyBinaryString += checksumBinary.substr(0, checksumLength);
 
-    if (fullEntropyBinaryString.length() % 11 != 0) {
+    if (fullEntropyBinaryString.length() % Bip39::numberOfBitsPerWord != 0) {
         throw std::runtime_error("Error with entropy string + checksum");
     }
 
@@ -61,7 +61,7 @@ std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
 
 
 std::string Bip39::fullEntropyBitsToMnemonicWords(const std::string &fullEntropyString) {
-    auto wordsBinaryArr = WalletKitUtils::split(fullEntropyString, 11);
+    auto wordsBinaryArr = WalletKitUtils::split(fullEntropyString, Bip39::numberOfBitsPerWord);
 
     std::stringstream seedStringStream;
     for (std::string const &binaryString: wordsBinaryArr) {
