@@ -167,13 +167,21 @@ std::string ethereumAddressChecksum(const std::string &address) {
 
 std::string ExtendedKey::deriveAddress() const {
     auto uncompressedPublicKey = *this->derivePublicChildKeyUncompressed();
-    std::vector<uint8_t> publicKeyWithoutPrefix(uncompressedPublicKey.key.begin() + 1, uncompressedPublicKey.key.end());
+    std::vector<uint8_t> publicKeyWithoutPrefix(
+            uncompressedPublicKey.key.begin() + 1,
+            uncompressedPublicKey.key.end()
+    );
     auto keccakDigestSecureVector = WalletKitCryptoUtils::keccak256(publicKeyWithoutPrefix);
-    std::vector<uint8_t> keccakDigestUnSecureVector = std::vector<uint8_t>(keccakDigestSecureVector.begin(),
-                                                                           keccakDigestSecureVector.end());
+    std::vector<uint8_t> keccakDigestUnSecureVector = std::vector<uint8_t>(
+            keccakDigestSecureVector.begin(),
+            keccakDigestSecureVector.end()
+    );
 
     // Extract last 20 bytes of hash as Ethereum address
-    std::vector<uint8_t> addressBytes(keccakDigestUnSecureVector.end() - 20, keccakDigestUnSecureVector.end());
+    std::vector<uint8_t> addressBytes(
+            keccakDigestUnSecureVector.end() - 20,
+            keccakDigestUnSecureVector.end()
+    );
     std::ostringstream oss;
     oss << "0x" << std::hex << std::setfill('0');
     for (auto byte: addressBytes) {
