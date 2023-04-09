@@ -1,7 +1,17 @@
 cmake_minimum_required(VERSION 3.24)
-project(wallet_kit_lib)
-
 set(CMAKE_CXX_STANDARD 20)
+
+set(PROJECT_NAME "wallet_kit_lib")
+project(${PROJECT_NAME} VERSION 1.0.0)
+
+# Set up the build directory
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/)
+if (NOT EXISTS ${CMAKE_BINARY_DIR})
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR})
+endif ()
+
+MESSAGE(${CMAKE_BINARY_DIR})
+
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -87,6 +97,10 @@ add_library(wallet_kit_lib SHARED
         src/bip39/bip39.cpp
         src/bip32/extended_key.cpp
         include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp include/wallet-kit/bip44/bip44.h include/wallet-kit/bip44/coin_type.h src/bip44/bip44.cpp)
+
+target_compile_definitions(wallet_kit_lib
+        PRIVATE LIBRARY_EXPORTS
+        )
 
 target_include_directories(wallet_kit_lib
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
