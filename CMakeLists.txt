@@ -56,7 +56,7 @@ if (NOT ${lcName}_POPULATED)
     include(ExternalProject)
     set(botan_args
             --minimized-build
-            --enable-modules=hash,bcrypt,scrypt,hex,system_rng,sha2_64,sha3,argon2,rmd160,base58,keccak
+            --enable-modules=hash,bcrypt,scrypt,hex,system_rng,sha2_64,sha3,argon2,rmd160,base58,keccak,tss,auto_rng,pubkey
             --disable-shared
             --prefix=${CMAKE_CURRENT_BINARY_DIR}/botan
             )
@@ -96,7 +96,7 @@ add_library(wallet_kit_lib SHARED
         src/bip32/bip32.cpp
         src/bip39/bip39.cpp
         src/bip32/extended_key.cpp
-        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp include/wallet-kit/bip44/bip44.h include/wallet-kit/bip44/coin_type.h src/bip44/bip44.cpp)
+        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp include/wallet-kit/bip44/bip44.h include/wallet-kit/bip44/coin_type.h src/bip44/bip44.cpp include/wallet-kit/cryptography/mpc_verify.h src/cryptography/mpc_verify.cpp)
 
 target_compile_definitions(wallet_kit_lib
         PRIVATE LIBRARY_EXPORTS
