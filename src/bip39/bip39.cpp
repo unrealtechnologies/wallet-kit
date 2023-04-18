@@ -42,9 +42,14 @@ std::vector<std::uint8_t> getBytes(std::string const &s)
     return bytes;
 }
 
-std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
+std::vector<uint8_t> Bip39::mnemonicToSeed(const std::string& mnemonic) {
+    return mnemonicToSeed(mnemonic, "");
+}
+
+std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic, const std::string& passphrase) {
     // Define the password and salt to use
     std::string salt = "mnemonic";
+    salt += passphrase;
 
     // Define the number of iterations to use
     const size_t iterations = 2048;
@@ -55,9 +60,6 @@ std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
     // Define the PRF to use (in this case, HMAC-SHA-512)
     std::unique_ptr<Botan::MessageAuthenticationCode> prf(Botan::MessageAuthenticationCode::create("HMAC(SHA-512)"));
     std::vector<uint8_t> password(mnemonic.begin(), mnemonic.end());
-//    std::string s = " meow";
-//    std::vector<std::uint8_t> bytes = getBytes(s);
-//    std::copy (bytes.begin(), bytes.end(), std::back_inserter(password));
     prf->set_key(password);
 
     // make the output buffer twice the length of the output.

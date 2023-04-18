@@ -18,7 +18,8 @@ public:
 
     static std::string entropyToMnemonic(std::vector<uint8_t> &entropy);
 
-    static std::vector<uint8_t> mnemonicToSeed(std::string);
+    static std::vector<uint8_t> mnemonicToSeed(std::string, const std::string&);
+    static std::vector<uint8_t> mnemonicToSeed(const std::string&);
 };
 
 #endif //WALLET_KIT_LIB_BIP39_H
