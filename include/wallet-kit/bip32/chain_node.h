@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <wallet-kit/bip32/extended_key.h>
 #include <wallet-kit/bip32/chain_node_context.h>
+#include <memory>
 
 struct ChainNode {
     std::unordered_map<uint32_t, std::tuple<std::unique_ptr<ExtendedKey>, std::unique_ptr<ExtendedKey>>> indexes;
