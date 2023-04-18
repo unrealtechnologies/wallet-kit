@@ -30,6 +30,18 @@ std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
     return fullEntropyBitsToMnemonicWords(fullEntropyBinaryString);
 }
 
+std::vector<std::uint8_t> getBytes(std::string const &s)
+{
+    std::vector<std::uint8_t> bytes;
+    bytes.reserve(s.size());
+
+    std::transform(std::begin(s), std::end(s), std::back_inserter(bytes), [](char c){
+        return std::uint8_t(c);
+    });
+
+    return bytes;
+}
+
 std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
     // Define the password and salt to use
     std::string salt = "mnemonic";
@@ -43,6 +55,9 @@ std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic) {
     // Define the PRF to use (in this case, HMAC-SHA-512)
     std::unique_ptr<Botan::MessageAuthenticationCode> prf(Botan::MessageAuthenticationCode::create("HMAC(SHA-512)"));
     std::vector<uint8_t> password(mnemonic.begin(), mnemonic.end());
+//    std::string s = " meow";
+//    std::vector<std::uint8_t> bytes = getBytes(s);
+//    std::copy (bytes.begin(), bytes.end(), std::back_inserter(password));
     prf->set_key(password);
 
     // make the output buffer twice the length of the output.
