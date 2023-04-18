@@ -7,6 +7,8 @@
 
 #include <vector>
 #include "chain_node_context.h"
+#include <string>
+#include <memory>
 
 // An extended key is defined as a construct of (k, c) k being the normal key, and c being the chaincode.
 struct ExtendedKey {
