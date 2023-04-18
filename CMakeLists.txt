@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.23)
 set(CMAKE_CXX_STANDARD 20)
 
 set(PROJECT_NAME "wallet_kit_lib")
@@ -46,6 +46,7 @@ FetchContent_Declare(
 FetchContent_GetProperties(botan)
 string(TOLOWER "botan" lcName)
 if (NOT ${lcName}_POPULATED)
+    MESSAGE(NOT POPULATED)
     set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_BINARY_DIR}/botan)
     #    find_package(Botan REQUIRED)
     # This downloads botan, but nothing beyond that
@@ -96,7 +97,7 @@ add_library(wallet_kit_lib SHARED
         src/bip32/bip32.cpp
         src/bip39/bip39.cpp
         src/bip32/extended_key.cpp
-        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp include/wallet-kit/bip44/bip44.h include/wallet-kit/bip44/coin_type.h src/bip44/bip44.cpp include/wallet-kit/cryptography/mpc_verify.h src/cryptography/mpc_verify.cpp)
+        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp include/wallet-kit/bip44/bip44.h include/wallet-kit/bip44/coin_type.h src/bip44/bip44.cpp)
 
 target_compile_definitions(wallet_kit_lib
         PRIVATE LIBRARY_EXPORTS
@@ -115,7 +116,7 @@ target_link_libraries(wallet_kit_lib
 # Define tests target
 add_executable(wallet_kit_tests
         test/test.cpp
-        test/bip32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp test/bip39_test_vector.cpp test/bip44_test_vector.cpp)
+        test/bip32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp test/bip39_test_vector.cpp test/bip44_test_vector.cpp test/recovery_check.cpp)
 
 target_include_directories(wallet_kit_tests PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
