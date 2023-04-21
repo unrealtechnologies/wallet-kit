@@ -17,9 +17,10 @@ public:
     static const int numberOfBitsPerWord = 11;
 
     static std::string entropyToMnemonic(std::vector<uint8_t> &entropy);
-
+    static bool validateMnemonic(const std::string &);
     static std::vector<uint8_t> mnemonicToSeed(std::string, const std::string&);
     static std::vector<uint8_t> mnemonicToSeed(const std::string&);
+    static std::vector<uint16_t> seedStringToWordIndexVector(const std::vector<std::string> &);
 };
 
 #endif //WALLET_KIT_LIB_BIP39_H

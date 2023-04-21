@@ -12,7 +12,7 @@
 #include <sstream>
 
 std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
-    if (entropy.size() <= 16 && entropy.size() >= 32 && entropy.size() % 4 != 0) {
+    if (entropy.size() < 16 || entropy.size() > 32 || entropy.size() % 4 != 0) {
         throw std::runtime_error("Key size should be between 128 and 256 bits");
     }
 
@@ -102,4 +102,52 @@ std::vector<uint8_t> Bip39::getEntropyChecksum(std::vector<uint8_t> &entropy) {
 
     uint8_t checksum = hash[0];
     return std::vector<uint8_t>{checksum};
+}
+
+bool Bip39::validateMnemonic(const std::string &mnemonic) {
+    auto delimiter = " ";
+    auto wordVector = WalletKitUtils::split(mnemonic, delimiter);
+
+    if (wordVector.size() > 24 || wordVector.size() < 12 || wordVector.size() % 2 != 0) {
+        return false;
+    }
+
+    // if the entropy is 128 bits aka 16 bytes, how do we turn that into something we can verify.
+    // the checksum length is the remainder of the length divided by 8. if 0 = 8
+    const auto fullEntropyLength = wordVector.size() * numberOfBitsPerWord;
+    const auto checksumLength = fullEntropyLength % 8 == 0 ? 8: fullEntropyLength % 8;
+
+    std::cout << checksumLength << std::endl;
+    std::cout << fullEntropyLength << std::endl;
+
+
+    std::ostringstream oss;
+    for (const auto &word: wordVector) {
+        auto binaryStr = WalletKitUtils::strToBinaryString(word);
+        oss << binaryStr.substr(0, numberOfBitsPerWord);
+    }
+
+    const auto finalChecksumBinaryString = oss.str();
+    const auto entropyBinaryString = finalChecksumBinaryString.substr(0, finalChecksumBinaryString.size() - checksumLength);
+    std::vector<uint8_t> entropyBinary(entropyBinaryString.begin(), entropyBinaryString.end());
+    const auto generatedChecksum = entropyToMnemonic(entropyBinary);
+
+
+    std::cout << generatedChecksum << std::endl;
+    std::cout << finalChecksumBinaryString << std::endl;
+    std::cout << finalChecksumBinaryString.size() << std::endl;
+    return true;
+}
+
+std::vector<uint16_t> Bip39::seedStringToWordIndexVector(const std::vector<std::string> &words) {
+    std::vector<uint16_t> wordListIndexes;
+    for (const auto &word: words) {
+        for (uint16_t i = 0; i < 2048; i++) {
+            if (word == EnglishWordList[i]) {
+                wordListIndexes.push_back(i);
+                continue;
+            }
+        }
+    }
+    return wordListIndexes;
 }
