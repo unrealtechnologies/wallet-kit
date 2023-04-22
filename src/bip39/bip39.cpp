@@ -6,7 +6,6 @@
 #include <wallet-kit/bip39.h>
 #include <wallet-kit/bip39/english_wordlist.h>
 #include "wallet-kit/cryptography/crypto_utils.h"
-#include <botan/hash.h>
 #include <botan/pbkdf2.h>
 #include <botan/mac.h>
 #include <botan/types.h>
@@ -94,14 +93,7 @@ std::string Bip39::fullEntropyBitsToMnemonicWords(const std::string &fullEntropy
 }
 
 std::vector<uint8_t> Bip39::getEntropyChecksum(std::vector<uint8_t> &entropy) {
-    std::unique_ptr<Botan::HashFunction> hash256(Botan::HashFunction::create("SHA-256"));
-
-    hash256->update(entropy.data(), entropy.size());
-    auto digest = hash256->final();
-    auto hash = std::vector<uint8_t>(digest.begin(), digest.end());
-
-    uint8_t checksum = hash[0];
-    return std::vector<uint8_t>{checksum};
+    return WalletKitCryptoUtils::sha256(entropy);
 }
 
 bool Bip39::validateMnemonic(const std::string &mnemonic) {
