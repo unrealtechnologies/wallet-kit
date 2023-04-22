@@ -5,6 +5,31 @@
 #include "utils.h"
 #include "wallet-kit/bip39.h"
 
+SCENARIO("We want to validate a bip39 mnemonic", "[bip39mnemonicvalidate]") {
+    GIVEN("We have the mnemonic") {
+        auto delimiter = " ";
+        WHEN("We check with a valid mnemonic") {
+            std::string mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+
+            auto words = WalletKitUtils::split(mnemonic, delimiter);
+            auto wordsIndexes = Bip39::seedStringToWordIndexVector(words);
+            REQUIRE(wordsIndexes.size() == 12);
+            auto isMnemonicValid = Bip39::validateMnemonic(mnemonic);
+            REQUIRE(isMnemonicValid == true);
+        }
+
+        WHEN("We check with a invalid mnemonic") {
+            std::string mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon";
+
+            auto words = WalletKitUtils::split(mnemonic, delimiter);
+            auto wordsIndexes = Bip39::seedStringToWordIndexVector(words);
+            REQUIRE(wordsIndexes.size() == 12);
+            auto isMnemonicValid = Bip39::validateMnemonic(mnemonic);
+            REQUIRE(isMnemonicValid == false);
+        }
+    }
+}
+
 SCENARIO("We test the BIP39 test vector", "[bip39testvec]") {
     GIVEN("We have a BIP39 test vector") {
         WHEN("We run the test with (entropy): 00000000000000000000000000000000") {
