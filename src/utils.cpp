@@ -35,6 +35,20 @@ namespace WalletKitUtils {
         return oss.str();
     }
 
+    std::string strToBinaryString(const std::string &str) {
+        std::ostringstream oss;
+        for (const auto byte: str) {
+          oss << std::bitset<8>(byte);
+        }
+        return oss.str();
+    }
+
+    std::string uint16ToBinary(uint16_t value, int bitsLength) {
+        std::bitset<16> bits(value); // convert value to bitset
+        std::string str = bits.to_string().substr(16 - bitsLength); // extract the least significant bits
+        return str;
+    }
+
 //
     std::vector<uint8_t> hexStringToBytes(const std::string &hexString) {
         std::vector<uint8_t> bytes;
@@ -71,7 +85,7 @@ namespace WalletKitUtils {
     std::string hexStringToBinary(const std::string &hexString) {
         std::string binaryString;
         for (char const &c: hexString) {
-            std::string binary = std::bitset<4>(std::stoi(std::string(1, c), nullptr, 16)).to_string();
+            std::string binary = std::bitset<8>(std::stoi(std::string(1, c), nullptr, 16)).to_string();
             binaryString += binary;
         }
         return binaryString;
