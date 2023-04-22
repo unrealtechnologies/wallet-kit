@@ -104,7 +104,9 @@ bool Bip39::validateMnemonic(const std::string &mnemonic) {
         return false;
     }
 
-    if (words.size() > 24 || words.size() < 12 || words.size() % 4 != 0) {
+    if (words.size() < minMnemonicWords ||
+        words.size() > maxMnemonicWords ||
+        words.size() % mnemonicWordGroupSize != 0) {
         return false;
     }
 
@@ -122,21 +124,16 @@ bool Bip39::validateMnemonic(const std::string &mnemonic) {
     const auto checksumBits = bits.substr(bits.length() - 4, bits.length());
 
     // reconstruct to bytes
-    auto bitsByteStorageVector = WalletKitUtils::split(entropyBits, 8);
-    auto entropyBytes = std::vector<uint8_t>();
-    for (std::string const &byteAsBits: bitsByteStorageVector) {
-        std::bitset<8> bit(byteAsBits);
-        auto byte = static_cast<unsigned char>(bit.to_ulong());
+    std::vector<uint8_t> entropyBytes;
+    for (size_t i = 0; i < entropyBits.size(); i += 8) {
+        std::string bitsString = entropyBits.substr(i, 8);
+        auto byte = static_cast<uint8_t>(std::stoi(bitsString, nullptr, 2));
         entropyBytes.push_back(byte);
     }
 
-    // byte format
+    // sha256 the bytes, the first n (checksumLength) of the hash should match the input checksum
     auto digest = WalletKitCryptoUtils::sha256(entropyBytes);
     auto digestChecksum = WalletKitUtils::vecToBinaryString(digest).substr(0, checksumLength);
-
-    uint8_t checksum = digest[0];
-    std::vector<uint8_t> chec = {checksum};
-
 
     if (digestChecksum == checksumBits) {
         return true;

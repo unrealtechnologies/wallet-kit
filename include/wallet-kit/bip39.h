@@ -15,6 +15,9 @@ private:
 
 public:
     static const int numberOfBitsPerWord = 11;
+    static const int minMnemonicWords = 12;
+    static const int maxMnemonicWords = 24;
+    static const int mnemonicWordGroupSize = 4;
 
     static std::string entropyToMnemonic(std::vector<uint8_t> &entropy);
     static bool validateMnemonic(const std::string &);
