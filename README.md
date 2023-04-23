@@ -1,72 +1,21 @@
-Internally we use two structs to hold data on private keys. The first is the ChainNode which contains both the private
-and the public key expressed as ExtendedKeys.
+# WalletKit 
 
-The second is the ExtendedKey which holds information about the type of key (public|private). As well as the key and
-chaincode.
+This repository contains the WalletKit C++ code.
 
-In order to minimize data duplication we should try and see where the rest of the data below best fits in order to be
-able to 1. derive further keys and 2. be able to serialize the data.
+WalletKit is Unreal's customized implementation of generating private and public keys for crypto wallets. The depends 
+on Botan Cryptography for securely generate keys protected from side channel attacks.
 
-1. version
-2. depth
-3. fingerprint
-4. child number
-5. key
-6. chaincode
-7. key type
+## Building WalletKit
+On the root directory run the following commands:
+1. `$ cmake`
+2. `$ make`
 
-Our current API for generating the root ChainNode looks like this:
+## Documentation
 
-```c++
-std::string mnemonic = "this should be your 12 / 24 word phrase";
-auto seed = Bip39::mnemonicToSeed(mnemonic);
-auto rootExtendedKey = Bip32::fromSeed(seed);
-```
+Coming soon.
 
-Deriving the public key is then done by calling the derivePublicChildKey method on the rootExtendedKey.
+## License
 
-```c++
-auto rootPublicKey = Bip32::derivePublicChildKey(*rootExtendedKey);
-auto base58EncodedString = rootPublicKey->toBase58();
-```
+The WalletKit library is licensed under the terms of the Apache license. See LICENSE for more information.
 
-When serializing a key to a base58 encoded string, it's necessary to have information on the version, depth, fingerprint, childNumber, key and chaincode.
-
-| Data Identifier | ChainNode | ExtendedKey |
-|-----------------|-----------|-------------|
-| Version         |           |             |
-| Depth           |           |             |
-| FingerPrint     |           |             |
-| ChildNumber     |           |             |
-| Key             |           |             |
-| ChainCode       |           |             |
-
-
-Would it be fair to create ChainNode which has ChainKeys and ChainContext as parameters
-ChainKeys would contain both the public and private key info.
-Chain context would contain the version, depth, fingerprint, childNumber, chaincode.
-
-Perhaps we should call a constructor to ChainNode using a private extended key, and then auto generate the 
-
-
-m/0'/0/0
-
-m.get
-
-Path is m -> EPK
-
-
-To minimize the risk of key compromise, most software systems that use private keys implement various security measures, such as:
-
-Using secure key storage mechanisms, such as hardware security modules (HSMs) or encrypted key files.
-Limiting the scope of memory access, using techniques such as sandboxing, virtualization, or containerization.
-Implementing access controls, such as user authentication and authorization, to restrict access to the keys only to authorized parties.
-Enforcing good coding practices, such as using secure memory allocation and deallocation techniques, avoiding buffer overflows, and sanitizing inputs.
-
-BIP32
-```text
-        ()
-normal /  \ hard
-     ()    ()
-```
-
+Disclaimer: This is not an officially supported Unreal product.
