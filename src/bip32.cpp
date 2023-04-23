@@ -3,8 +3,8 @@
 //
 
 #include "wallet-kit/bip32.h"
-#include "wallet-kit/cryptography/crypto_utils.h"
-#include "utils.h"
+#include "wallet-kit/crypto_utils.h"
+#include "wallet-kit/utils.h"
 
 std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
     std::string keyString = "Bitcoin seed";

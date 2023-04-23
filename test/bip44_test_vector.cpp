@@ -3,9 +3,9 @@
 //
 
 #include <catch2/catch_test_macros.hpp>
-#include "utils.h"
-#include <wallet-kit/bip44/bip44.h>
-#include <wallet-kit/bip44/coin_type.h>
+#include "wallet-kit/utils.h"
+#include "wallet-kit/bip44.h"
+#include "wallet-kit/coin_type.h"
 #include <wallet-kit/bip39.h>
 #include <wallet-kit/bip32.h>
 #include <iomanip>

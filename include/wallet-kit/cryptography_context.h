@@ -6,13 +6,13 @@
 #define WALLET_KIT_LIB_CRYPTOGRAPHY_CONTEXT_H
 
 #include <mutex>
-#include "secp256k1.h"
+#include "../../build/_deps/secp256k1-src/include/secp256k1.h"
 
 class CryptoContext {
 public:
     static CryptoContext &getInstance();
 
-    [[maybe_unused]] secp256k1_context *getSecp256k1Context();
+    [[maybe_unused]] secp256k1_context *getSecp256K1Context();
 
 
 private:

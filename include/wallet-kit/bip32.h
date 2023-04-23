@@ -5,8 +5,8 @@
 #ifndef WALLET_KIT_LIB_BIP32_H
 #define WALLET_KIT_LIB_BIP32_H
 
-#include "wallet-kit/bip32/extended_key.h"
-#include "wallet-kit/bip32/chain_node.h"
+#include "extended_key.h"
+#include "chain_node.h"
 
 class Bip32 {
 public:

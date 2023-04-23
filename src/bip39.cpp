@@ -2,10 +2,10 @@
 // Created by Ariel Saldana on 3/26/23.
 //
 #include <iostream>
-#include <utils.h>
-#include <wallet-kit/bip39.h>
-#include <wallet-kit/bip39/english_wordlist.h>
-#include "wallet-kit/cryptography/crypto_utils.h"
+#include "wallet-kit/utils.h"
+#include "wallet-kit/bip39.h"
+#include "wallet-kit/english_wordlist.h"
+#include "wallet-kit/crypto_utils.h"
 #include <botan/pbkdf2.h>
 #include <botan/mac.h>
 #include <botan/types.h>

@@ -100,11 +100,10 @@ endif ()
 
 # Define library target
 add_library(wallet_kit_lib SHARED
-        src/library.cpp
-        src/bip32/bip32.cpp
-        src/bip39/bip39.cpp
-        src/bip32/extended_key.cpp
-        include/wallet-kit/bip32/chain_node.h src/bip32/chain_node.cpp src/utils.cpp include/wallet-kit/bip32/chain_node_context.h src/bip32/chain_node_context.cpp include/wallet-kit/cryptography/crypto_utils.h src/cryptography/crypto_utils.cpp include/wallet-kit/cryptography/cryptography_context.h src/cryptography/cryptography_context.cpp src/cryptography/crypto_utils.cpp include/wallet-kit/bip44/bip44.h include/wallet-kit/bip44/coin_type.h src/bip44/bip44.cpp)
+        src/bip32.cpp
+        src/bip39.cpp
+        src/extended_key.cpp
+        include/wallet-kit/chain_node.h src/chain_node.cpp src/utils.cpp include/wallet-kit/chain_node_context.h src/chain_node_context.cpp include/wallet-kit/crypto_utils.h src/crypto_utils.cpp include/wallet-kit/cryptography_context.h src/cryptography_context.cpp src/crypto_utils.cpp include/wallet-kit/bip44.h include/wallet-kit/coin_type.h src/bip44.cpp)
 
 target_compile_definitions(wallet_kit_lib
         PRIVATE LIBRARY_EXPORTS

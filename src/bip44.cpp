@@ -2,8 +2,8 @@
 // Created by Ariel Saldana on 4/5/23.
 //
 
-#include <wallet-kit/bip44/bip44.h>
-#include <wallet-kit/bip44/coin_type.h>
+#include "wallet-kit/bip44.h"
+#include "wallet-kit/coin_type.h"
 
 Bip44::Bip44(
         const CoinType &coinType,

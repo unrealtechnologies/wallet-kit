@@ -2,7 +2,7 @@
 // Created by Ariel Saldana on 4/4/23.
 //
 #include <catch2/catch_test_macros.hpp>
-#include "utils.h"
+#include "wallet-kit/utils.h"
 #include "wallet-kit/bip39.h"
 
 SCENARIO("We want to validate a bip39 mnemonic", "[bip39mnemonicvalidate]") {

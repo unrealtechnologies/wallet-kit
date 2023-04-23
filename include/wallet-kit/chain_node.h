@@ -7,8 +7,8 @@
 
 #include <iostream>
 #include <unordered_map>
-#include <wallet-kit/bip32/extended_key.h>
-#include <wallet-kit/bip32/chain_node_context.h>
+#include "extended_key.h"
+#include "chain_node_context.h"
 #include <memory>
 
 struct ChainNode {

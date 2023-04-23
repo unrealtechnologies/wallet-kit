@@ -1,7 +1,7 @@
 //
 // Created by Ariel Saldana on 3/30/23.
 //
-#include "wallet-kit/bip32/chain_node_context.h"
+#include "wallet-kit/chain_node_context.h"
 
 ChainNodeContext::ChainNodeContext(
         uint8_t depth,

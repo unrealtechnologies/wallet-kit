@@ -2,9 +2,9 @@
 // Created by Ariel Saldana on 3/29/23.
 //
 #include <utility>
-#include <wallet-kit/bip32/chain_node.h>
+#include "wallet-kit/chain_node.h"
 #include "wallet-kit/bip32.h"
-#include <utils.h>
+#include "wallet-kit/utils.h"
 
 ChainNode::ChainNode() = default;
 

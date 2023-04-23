@@ -3,11 +3,11 @@
 //
 
 #include <vector>
-#include <utils.h>
-#include "wallet-kit/bip32/extended_key.h"
-#include <wallet-kit/cryptography/crypto_utils.h>
 #include <iomanip>
 #include <sstream>
+#include "wallet-kit/utils.h"
+#include "wallet-kit/extended_key.h"
+#include "wallet-kit/crypto_utils.h"
 
 std::string ExtendedKey::toBase58() {
     if (this->context == nullptr) {
@@ -154,7 +154,7 @@ std::string ethereumAddressChecksum(const std::string &address) {
     // Create the checksum address by replacing each character in the original address
     // with either uppercase or lowercase depending on the corresponding character in the hash
     std::string checksumAddress = "0x";
-    for (int i = 0; i < lowercaseAddress.length(); i++) {
+for (int i = 0; i < lowercaseAddress.length(); i++) {
         if (((hash[i / 2] >> ((1 - i % 2) * 4)) & 0x0f) >= 8) {
             checksumAddress += toupper(lowercaseAddress[i]);
         } else {

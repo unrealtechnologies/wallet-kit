@@ -2,15 +2,15 @@
 // Created by Ariel Saldana on 4/2/23.
 //
 
-#include <wallet-kit/cryptography/cryptography_context.h>
-#include <wallet-kit/cryptography/crypto_utils.h>
+#include "wallet-kit/cryptography_context.h"
+#include "wallet-kit/crypto_utils.h"
 #include <botan/sha2_32.h>
 #include <botan/mac.h>
 #include <botan/rmd160.h>
-#include <secp256k1.h>
+#include "secp256k1.h"
 #include <botan/base58.h>
 #include <botan/keccak.h>
-#include "utils.h"
+#include "wallet-kit/utils.h"
 #include <botan/system_rng.h>
 
 uint32_t WalletKitCryptoUtils::htobe32(uint32_t x) {
@@ -83,7 +83,7 @@ std::vector<uint8_t> WalletKitCryptoUtils::ripemd160(const std::vector<uint8_t> 
 }
 
 std::vector<uint8_t> WalletKitCryptoUtils::generatePublicKey(const std::vector<uint8_t> &key, bool compressed) {
-    auto ctx = CryptoContext::getInstance().getSecp256k1Context();
+    auto ctx = CryptoContext::getInstance().getSecp256K1Context();
     secp256k1_pubkey pubkey;
     auto len = (compressed) ? 33U : 65U;
 
@@ -119,7 +119,7 @@ std::vector<uint8_t> WalletKitCryptoUtils::generatePublicKey(const std::vector<u
 
 std::vector<uint8_t>
 WalletKitCryptoUtils::generatePrivateKey(const std::vector<uint8_t> &key, const std::vector<uint8_t> &tweak) {
-    auto ctx = CryptoContext::getInstance().getSecp256k1Context();
+    auto ctx = CryptoContext::getInstance().getSecp256K1Context();
 
     // make a copy to tweak
     auto privateKey(key);
