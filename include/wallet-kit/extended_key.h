@@ -12,23 +12,35 @@
 
 // An extended key is defined as a construct of (k, c) k being the normal key, and c being the chaincode.
 struct ExtendedKey {
+    static const int privateKeyLength = 32;
+    static const int publicKeyLength = 33;
+    static const int ethereumAddressByteSize = 20;
+    static const size_t uint32ByteSize = 4;
+
     std::shared_ptr<ChainNodeContext> context;
     std::vector<uint8_t> key;
     std::vector<uint8_t> chainCode;
 
-    [[nodiscard]] std::string toBase58();
+    [[nodiscard]]
+    std::string toBase58();
 
-    [[nodiscard]] std::vector<uint8_t> serialize();
+    [[nodiscard]]
+    std::vector<uint8_t> serialize();
 
-    [[nodiscard]] std::vector<uint8_t> fingerPrint() const;
+    [[nodiscard]]
+    std::vector<uint8_t> fingerPrint() const;
 
-    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKey(bool compressed = true) const;
+    [[nodiscard]]
+    std::unique_ptr<ExtendedKey> derivePublicChildKey(bool compressed = true) const;
 
-    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint, bool hardened);
+    [[nodiscard]]
+    std::unique_ptr<ExtendedKey> derivePrivateChildKey(uint32_t index, uint32_t fingerprint, bool hardened);
 
-    [[nodiscard]] std::unique_ptr<ExtendedKey> derivePublicChildKeyUncompressed() const;
+    [[nodiscard]]
+    std::unique_ptr<ExtendedKey> derivePublicChildKeyUncompressed() const;
 
-    [[nodiscard]] std::string deriveAddress() const;
+    [[nodiscard]]
+    std::string deriveAddress() const;
 };
 
 

@@ -27,10 +27,12 @@ std::vector<uint8_t> ExtendedKey::serialize() {
     const std::vector<uint8_t> privateVersion = {0x04, 0x88, 0xAD, 0xE4};   // 4 bytes version
     const std::vector<uint8_t> publicVersion = {0x04, 0x88, 0xB2, 0x1E};    // 4 bytes version
 
-    if (this->key.size() == 32) {
+    if (this->key.size() == ExtendedKey::privateKeyLength) {
         structure.insert(structure.end(), privateVersion.begin(), privateVersion.end());
-    } else {
+    } else if(this->key.size() == ExtendedKey::publicKeyLength) {
         structure.insert(structure.end(), publicVersion.begin(), publicVersion.end());
+    } else {
+        throw std::runtime_error("Key is not a valid length.");
     }
 
     structure.insert(
@@ -57,7 +59,7 @@ std::vector<uint8_t> ExtendedKey::serialize() {
 
     structure.insert(structure.end(), this->chainCode.begin(), this->chainCode.end());
 
-    if (this->key.size() == 32) {
+    if (this->key.size() == ExtendedKey::privateKeyLength) {
         structure.push_back(0x00);
     }
 
@@ -99,7 +101,7 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, 
     }
 
     // Compute HMAC-SHA512 of parent key and child index
-    std::vector<uint8_t> data(37);
+    std::vector<uint8_t> data(ExtendedKey::privateKeyLength + ExtendedKey::uint32ByteSize + 1);
     if (hardened) {
         data[0] = 0x00;
         std::copy(this->key.begin(), this->key.end(), data.begin() + 1);
@@ -116,8 +118,8 @@ std::unique_ptr<ExtendedKey> ExtendedKey::derivePrivateChildKey(uint32_t index, 
 
     // Split HMAC output into left (IL) and right (IR) 32-byte sequences
     // (IL) is used as the tweak value, (IR) is used as the child chain code
-    std::vector<uint8_t> IL(I.begin(), I.begin() + 32);
-    std::vector<uint8_t> IR(I.begin() + 32, I.end());
+    std::vector<uint8_t> IL(I.begin(), I.begin() + ExtendedKey::privateKeyLength);
+    std::vector<uint8_t> IR(I.begin() + ExtendedKey::privateKeyLength, I.end());
 
     auto privateKey = WalletKitCryptoUtils::generatePrivateKey(this->key, IL);
 
@@ -154,7 +156,7 @@ std::string ethereumAddressChecksum(const std::string &address) {
     // Create the checksum address by replacing each character in the original address
     // with either uppercase or lowercase depending on the corresponding character in the hash
     std::string checksumAddress = "0x";
-for (int i = 0; i < lowercaseAddress.length(); i++) {
+    for (int i = 0; i < lowercaseAddress.length(); i++) {
         if (((hash[i / 2] >> ((1 - i % 2) * 4)) & 0x0f) >= 8) {
             checksumAddress += toupper(lowercaseAddress[i]);
         } else {
@@ -179,7 +181,7 @@ std::string ExtendedKey::deriveAddress() const {
 
     // Extract last 20 bytes of hash as Ethereum address
     std::vector<uint8_t> addressBytes(
-            keccakDigestUnSecureVector.end() - 20,
+            keccakDigestUnSecureVector.end() - ExtendedKey::ethereumAddressByteSize,
             keccakDigestUnSecureVector.end()
     );
     std::ostringstream oss;
