@@ -30,17 +30,6 @@ std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
     return fullEntropyBitsToMnemonicWords(fullEntropyBinaryString);
 }
 
-std::vector<std::uint8_t> getBytes(std::string const &s) {
-    std::vector<std::uint8_t> bytes;
-    bytes.reserve(s.size());
-
-    std::transform(std::begin(s), std::end(s), std::back_inserter(bytes), [](char c) {
-        return std::uint8_t(c);
-    });
-
-    return bytes;
-}
-
 std::vector<uint8_t> Bip39::mnemonicToSeed(const std::string &mnemonic) {
     return mnemonicToSeed(mnemonic, "");
 }
