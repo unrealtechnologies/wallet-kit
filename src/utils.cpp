@@ -14,8 +14,7 @@ namespace WalletKitUtils {
         for (int i = 0; i < len; ++i) {
             ss << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) (unsigned char) str[i];
         }
-        std::string mystr = ss.str();
-        return mystr;
+        return ss.str();
     }
 
     std::string toHex(std::vector<uint8_t> &vec, size_t len) {
@@ -23,8 +22,7 @@ namespace WalletKitUtils {
         for (int i = 0; i < len; ++i) {
             ss << std::hex << std::setw(2) << std::setfill('0') << (unsigned int) (unsigned char) vec[i];
         }
-        std::string mystr = ss.str();
-        return mystr;
+        return ss.str();
     }
 
     std::string vecToBinaryString(const std::vector<uint8_t> &vec) {
@@ -73,9 +71,8 @@ namespace WalletKitUtils {
     }
 
     std::string charArrayToBinary(uint8_t *input, size_t inputSize, size_t finalStringLength) {
-        size_t size = inputSize;
         std::string binaryStr;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < inputSize; i++) {
             std::bitset<8> binary_char(input[i]); // convert char to 8-bit binary string
             binaryStr += binary_char.to_string(); // concatenate binary string to result
         }

@@ -31,6 +31,10 @@ public:
     static const int minMnemonicWords = 12;
     static const int maxMnemonicWords = 24;
     static const int mnemonicWordGroupSize = 4;
+    static const int entropyBytesMinLength = 16;
+    static const int entropyBytesMaxLength = 32;
+    static const int mnemonicEncodeBitsSize = 32;
+    static const int bitsInByte = 8;
 
     /**
      * @brief Converts a vector of bytes representing entropy to a string of BIP39 mnemonic words.

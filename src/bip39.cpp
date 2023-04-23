@@ -12,13 +12,15 @@
 #include <sstream>
 
 std::string Bip39::entropyToMnemonic(std::vector<uint8_t> &entropy) {
-    if (entropy.size() < 16 || entropy.size() > 32 || entropy.size() % 4 != 0) {
+    if (entropy.size() < entropyBytesMinLength ||
+        entropy.size() > entropyBytesMaxLength ||
+        entropy.size() % mnemonicWordGroupSize != 0) {
         throw std::runtime_error("Key size should be between 128 and 256 bits");
     }
 
     auto checksum = getEntropyChecksum(entropy);
     auto checksumBinary = WalletKitUtils::vecToBinaryString(checksum);
-    auto checksumLength = entropy.size() * 8 / 32;
+    auto checksumLength = entropy.size() * bitsInByte / mnemonicEncodeBitsSize;
 
     auto fullEntropyBinaryString = WalletKitUtils::vecToBinaryString(entropy);
     fullEntropyBinaryString += checksumBinary.substr(0, checksumLength);
@@ -54,11 +56,11 @@ std::vector<uint8_t> Bip39::mnemonicToSeed(std::string mnemonic, const std::stri
     uint8_t out[outputLength * 2];
 
     const auto *saltUint8 = reinterpret_cast<const uint8_t *>(salt.c_str());
+
     Botan::pbkdf2(*prf,
                   out, outputLength,
                   saltUint8, salt.length(),
-                  iterations
-    );
+                  iterations);
 
     std::vector<uint8_t> seed(out, out + outputLength);
     return seed;

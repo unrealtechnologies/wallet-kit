@@ -17,7 +17,6 @@ std::unique_ptr<ChainNode> Bip32::fromSeed(std::vector<uint8_t> &seed) {
 
     // private key
     std::unique_ptr<ExtendedKey> extendedPrivateKey(new ExtendedKey());
-//    std::unique_ptr<ExtendedKey> extendedPrivateKey(new ExtendedKey());
     extendedPrivateKey->context = context;
     extendedPrivateKey->key = std::vector<uint8_t>(
             extendedKeyRaw.begin(),
