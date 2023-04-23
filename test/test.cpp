@@ -4,9 +4,9 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <wallet-kit/bip39.h>
-#include <wallet-kit/bip32.h>
-#include <utils.h>
+#include "wallet-kit/bip39.h"
+#include "wallet-kit/bip32.h"
+#include "wallet-kit/utils.h"
 
 TEST_CASE("Bip39 mnemonics are derived correctly", "[entropyToMnemonic]") {
     std::string entropyHexStr = "c94c3a10b50450a4eaeee90e45ca90f551ef08266942b4bc4ad821e517e7a24a";
