@@ -2,7 +2,16 @@ cmake_minimum_required(VERSION 3.23)
 set(CMAKE_CXX_STANDARD 20)
 
 set(PROJECT_NAME "wallet_kit_lib")
-project(${PROJECT_NAME} VERSION 1.0.0)
+project(${PROJECT_NAME} VERSION 0.0.1)
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 
 # Set up the build directory
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/)
@@ -11,7 +20,6 @@ if (NOT EXISTS ${CMAKE_BINARY_DIR})
 endif ()
 
 MESSAGE(${CMAKE_BINARY_DIR})
-
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
