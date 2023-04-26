@@ -24,7 +24,7 @@
 #define WALLET_KIT_LIB_CRYPTOGRAPHY_CONTEXT_H
 
 #include <mutex>
-#include "../../build/_deps/secp256k1-src/include/secp256k1.h"
+#include "secp256k1.h"
 
 class CryptoContext {
 public:
