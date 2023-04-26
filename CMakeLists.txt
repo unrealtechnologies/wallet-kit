@@ -4,39 +4,30 @@ set(CMAKE_CXX_STANDARD 20)
 set(PROJECT_NAME "wallet_kit_lib")
 project(${PROJECT_NAME} VERSION 0.0.1)
 
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
+option(BUILD_TESTS "Build tests" OFF)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif ()
 
 
 # Set up the build directory
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/)
-if (NOT EXISTS ${CMAKE_BINARY_DIR})
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR})
-endif ()
-
-MESSAGE(${CMAKE_BINARY_DIR})
+#set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build/)
+#if (NOT EXISTS ${CMAKE_BINARY_DIR})
+#    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR})
+#endif ()
+#MESSAGE(${CMAKE_BINARY_DIR})
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fPIC")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -O3")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-
-# Fetch and configure Catch2
-include(FetchContent)
-FetchContent_Declare(
-        Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG devel
-)
-FetchContent_MakeAvailable(Catch2)
 
 # Fetch and configure secp256k1
 include(FetchContent)
@@ -70,10 +61,10 @@ if (NOT ${lcName}_POPULATED)
     set(botan_args
             --minimized-build
             --enable-modules=hash,bcrypt,scrypt,hex,system_rng,sha2_64,sha3,argon2,rmd160,base58,keccak,tss,auto_rng,pubkey
-	    #--disable-shared
-	    --enable-shared
-	    --cc=gcc
-	    --prefix=${CMAKE_CURRENT_BINARY_DIR}/botan
+            #--disable-shared
+            --enable-shared
+            --cc=gcc
+            --prefix=${CMAKE_CURRENT_BINARY_DIR}/botan
             )
 
 
@@ -92,7 +83,6 @@ if (NOT ${lcName}_POPULATED)
     add_library(Botan::botan STATIC IMPORTED GLOBAL)
     add_dependencies(Botan::botan botan_project)
 
-
     # Workaround for INTERFACE_INCLUDE_DIRECTORIES. The problem is the include
     # directory needs to exist at cmake configuration time even though it won't
     # exist until the external project is checked out at build time.
@@ -104,7 +94,6 @@ if (NOT ${lcName}_POPULATED)
             )
 
 endif ()
-
 
 # Define library target
 add_library(wallet_kit_lib SHARED
@@ -127,16 +116,27 @@ target_link_libraries(wallet_kit_lib
         secp256k1
         )
 
-# Define tests target
-add_executable(wallet_kit_tests
-        test/test.cpp
-        test/bip32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp test/bip39_test_vector.cpp test/bip44_test_vector.cpp test/recovery_check.cpp)
+if (BUILD_TESTS)
+    # Fetch and configure Catch2
+    include(FetchContent)
+    FetchContent_Declare(
+            Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG devel
+    )
+    FetchContent_MakeAvailable(Catch2)
 
-target_include_directories(wallet_kit_tests PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        )
+    # Define tests target
+    add_executable(wallet_kit_tests
+            test/test.cpp
+            test/bip32_test_vector_4.cpp test/bip32_test_vector_2.cpp test/bip32_test_vector_3.cpp test/bip32_test_vector_1.cpp test/bip39_test_vector.cpp test/bip44_test_vector.cpp test/recovery_check.cpp)
 
-target_link_libraries(wallet_kit_tests
-        PRIVATE Catch2::Catch2WithMain
-        PRIVATE wallet_kit_lib
-        )
+    target_include_directories(wallet_kit_tests PUBLIC
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+            )
+
+    target_link_libraries(wallet_kit_tests
+            PRIVATE Catch2::Catch2WithMain
+            PRIVATE wallet_kit_lib
+            )
+endif ()
