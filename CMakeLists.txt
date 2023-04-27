@@ -112,8 +112,8 @@ target_include_directories(wallet_kit_lib
         )
 
 target_link_libraries(wallet_kit_lib
-        Botan::botan
-        secp256k1
+        PRIVATE Botan::botan
+        PRIVATE secp256k1
         )
 
 if (BUILD_TESTS)
