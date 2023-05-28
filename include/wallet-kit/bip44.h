@@ -25,6 +25,7 @@
 
 #include <string>
 #include "coin_type.h"
+#include <cstdint>
 
 /**
  * @brief The Bip44 class provides functionality for generating BIP44 paths.
