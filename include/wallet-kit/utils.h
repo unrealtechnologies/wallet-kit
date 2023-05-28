@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdint>
 
 namespace WalletKitUtils {
 
