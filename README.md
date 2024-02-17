@@ -12,7 +12,7 @@ On the root directory run the following commands:
 
 ## Documentation
 
-Coming soon.
+Coming soon. Header files should contain some documentation.
 
 ## License
 
